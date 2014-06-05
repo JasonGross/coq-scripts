@@ -11,8 +11,16 @@ pushd "$DIR" 1>/dev/null
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 cd "$ROOT_DIR"
 
-# now find a makefile
-MAKEFILE="$(git ls-files | grep 'Makefile$\|makefile$\|GNUmakefile$' | tail -1)"
+# We assume that we're a git submodule, so we need to do this once more
+cd ..
+# now change to the git root; use `cd` so we only need one `popd`
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+
+# Now find a makefile.  We assume that the top-level makefile is last
+# in git ls-files; we want to pick up everything, whether it is cached
+# or just laying around
+MAKEFILE="$(git ls-files --cached --others *Makefile *makefile *GNUmakefile | tail -1)"
 if [ ! -z "$MAKEFILE" ]; then
     cd "$(dirname "$MAKEFILE")"
 else
