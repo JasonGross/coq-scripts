@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 ######################################################################
-# Record the compilation performance of the current tip of the
-# library and the previous commit, and compare them.
+# Record the compilation performance of the current state of the
+# library and the previous state, and compare them.
 #
-# USAGE: etc/coq-scripts/timing/make-pretty-timed-diff-tip.sh -j<NUMBER OF THREADS TO USE>
+# USAGE: etc/coq-scripts/timing/make-pretty-timed-only-diff.sh -j<NUMBER OF THREADS TO USE>
 #
 # This script creates a file ($BOTH_TIME_FILE in
 # etc/coq-scripts/timing/make-pretty-timed-defaults.sh) with the
@@ -18,14 +18,18 @@
 # if some files in the library fail to compile, so do not use the
 # success of this script as an indicator that the library compiles.
 #
-# This script uses `git checkout` to change states; this script will
-# exit if you have staged but uncomitted changes.  The preferred way
-# to run this script is:
+# This script uses `git stash` to save the current state of the
+# repository.  This script is most useful after you have run `git add`
+# on all of the files, and are preparing to make a commit, but have
+# not yet committed (you have staged your changes, but not commited
+# them).  The preferred way to run this script is:
 #
-# $ ./etc/coq-scripts/timing/make-pretty-timed-diff-tip.sh
-# $ git commit --amend -em "$(git log -1 --pretty=%B; echo; cat ./time-of-build-both.log)"
+# $ git status
+# $ git add <all files mentioned above which you care to have in the repo>
+# $ ./etc/coq-scripts/timing/make-pretty-timed-only-diff.sh
+# $ git commit -at ./time-of-build-both.log
 #
-# This will bring up an editor, where you should edit your commit
+# This will bring up an editor, where you should add your commit
 # message above the time profile, leaving at least one blank line
 # before the table.  You may pass, e.g., -j2 to this script to have it
 # use more threads.  You should not exceed the number of cores on your
@@ -43,6 +47,6 @@ trap "exit 1" SIGHUP SIGINT SIGTERM
 source "$DIR"/make-pretty-timed-defaults.sh "$@"
 
 # run make clean and make, on both the old state and the new state
-bash "$DIR"/make-each-time-file-tip.sh "$MAKE" "$NEW_TIME_FILE" "$OLD_TIME_FILE" || exit 1
+bash "$DIR"/make-each-time-file-only-diff.sh "$MAKE" "$NEW_TIME_FILE" "$OLD_TIME_FILE" || exit 1
 # aggregate the results
 bash "$DIR"/make-combine-pretty-timed.sh "$@"

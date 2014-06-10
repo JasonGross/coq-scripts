@@ -4,15 +4,15 @@
 # Record the compilation performance of the current state of the
 # library and the previous state, and compare them.
 #
-# USAGE: etc/timing/make-pretty-timed-diff.sh -j<NUMBER OF THREADS TO USE>
+# USAGE: etc/coq-scripts/timing/make-pretty-timed-diff.sh -j<NUMBER OF THREADS TO USE>
 #
 # This script creates a file ($BOTH_TIME_FILE in
-# etc/timing/make-pretty-timed-defaults.sh) with the duration of
-# compilation of each file that is compiled by `make`, as well as the
-# total duration, of both the current state of the library and the
-# most recent commit.  Any arguments passed to this script are passed
-# along to `make`.  Argument quoting is NOT preserved.  This script
-# supports multiple threads (the `-j<n>` arguments to `make`).
+# etc/coq-scripts/timing/make-pretty-timed-defaults.sh) with the
+# duration of compilation of each file that is compiled by `make`, as
+# well as the total duration, of both the current state of the library
+# and the most recent commit.  Any arguments passed to this script are
+# passed along to `make`.  Argument quoting is NOT preserved.  This
+# script supports multiple threads (the `-j<n>` arguments to `make`).
 #
 # IMPORTANT NOTE: The performance will be successfully computed even
 # if some files in the library fail to compile, so do not use the
@@ -26,7 +26,7 @@
 #
 # $ git status
 # $ git add <all files mentioned above which you care to have in the repo>
-# $ "$DIR"/make-pretty-timed-diff.sh
+# $ ./etc/coq-scripts/timing/make-pretty-timed-diff.sh
 # $ git commit -at ./time-of-build-both.log
 #
 # This will bring up an editor, where you should add your commit

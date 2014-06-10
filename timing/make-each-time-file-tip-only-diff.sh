@@ -6,10 +6,10 @@ then
 
     cat <<EOF
 
-This is a helper script for make-pretty-timed-diff-tip.sh.
+This is a helper script for make-pretty-timed-diff-tip-only-diff.sh.
 
 
-USAGE: make-each-time-file-tip.sh MAKE-COMMAND NEW_FILENAME OLD_FILENAME
+USAGE: make-each-time-file-tip-only-diff.sh MAKE-COMMAND NEW_FILENAME OLD_FILENAME
 
 MAKE-COMMAND: The command which is used to make the library, such as
               `make` or `make -j2`
@@ -56,6 +56,9 @@ fi
 echo "Tip is $BRANCH_DISP ($BRANCH)"
 echo 'If this is wrong, break immediately with ^C'
 
+# make the new version so we only get diffs
+trap "exit 1" SIGHUP SIGINT SIGTERM
+$MAKE -k
 
 # make the old version
 
@@ -64,9 +67,6 @@ trap "git checkout '$BRANCH_MOV' && exit 1" SIGHUP SIGINT SIGTERM
 
 git checkout HEAD^
 
-# we must `make clean` so we have a fresh slate, and time _all_ the
-# files
-$MAKE clean
 # run the given `make` command, passing `TIMED=1` to get timing and
 # `-k` to continue even if files fail
 $MAKE TIMED=1 -k 2>&1 | tee "$OLD_FILE"
@@ -76,9 +76,6 @@ $MAKE TIMED=1 -k 2>&1 | tee "$OLD_FILE"
 git checkout "$BRANCH_MOV"
 # now if we're interrupted, we should only exit immediately
 trap "exit 1" SIGHUP SIGINT SIGTERM
-# we must `make clean` so we have a fresh slate, and time _all_ the
-# files
-$MAKE clean
 # run the given `make` command, passing `TIMED=1` to get timing and
 # `-k` to continue even if files fail
 $MAKE TIMED=1 -k 2>&1 | tee "$NEW_FILE"

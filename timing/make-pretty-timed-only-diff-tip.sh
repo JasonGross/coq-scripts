@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
 ######################################################################
-# Record the compilation performance of the current tip of the
-# library and the previous commit, and compare them.
+# Record the compilation performance of the current tip of the library
+# and the previous commit, and compare them, only on the files that
+# changed.
 #
-# USAGE: etc/coq-scripts/timing/make-pretty-timed-diff-tip.sh -j<NUMBER OF THREADS TO USE>
+# USAGE: etc/coq-scripts/timing/make-pretty-timed-only-diff-tip.sh -j<NUMBER OF THREADS TO USE>
 #
 # This script creates a file ($BOTH_TIME_FILE in
 # etc/coq-scripts/timing/make-pretty-timed-defaults.sh) with the
@@ -22,7 +23,7 @@
 # exit if you have staged but uncomitted changes.  The preferred way
 # to run this script is:
 #
-# $ ./etc/coq-scripts/timing/make-pretty-timed-diff-tip.sh
+# $ ./etc/coq-scripts/timing/make-pretty-timed-only-diff-tip.sh
 # $ git commit --amend -em "$(git log -1 --pretty=%B; echo; cat ./time-of-build-both.log)"
 #
 # This will bring up an editor, where you should edit your commit
@@ -43,6 +44,6 @@ trap "exit 1" SIGHUP SIGINT SIGTERM
 source "$DIR"/make-pretty-timed-defaults.sh "$@"
 
 # run make clean and make, on both the old state and the new state
-bash "$DIR"/make-each-time-file-tip.sh "$MAKE" "$NEW_TIME_FILE" "$OLD_TIME_FILE" || exit 1
+bash "$DIR"/make-each-time-file-tip-only-diff.sh "$MAKE" "$NEW_TIME_FILE" "$OLD_TIME_FILE" || exit 1
 # aggregate the results
 bash "$DIR"/make-combine-pretty-timed.sh "$@"
