@@ -29,7 +29,7 @@ fi
 
 # in case we're run from out of git repo
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source "$DIR/pushd-root.sh"
+source "$DIR/../pushd-root.sh"
 
 MAKE="$1"
 NEW_FILE="$2"

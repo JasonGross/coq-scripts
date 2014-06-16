@@ -38,7 +38,7 @@
 
 # in case we're run from out of git repo
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source "$DIR/pushd-root.sh"
+source "$DIR/../pushd-root.sh"
 
 # exit immediately if killed
 trap "exit 1" SIGHUP SIGINT SIGTERM
