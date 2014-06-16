@@ -49,7 +49,7 @@ def to_seconds(time):
     '''
     minutes, seconds = time.replace('s', '').split('m')
     sign = -1 if time[0] == '-' else 1
-    return int(minutes) * 60 + float(seconds)
+    return sign * (abs(int(minutes)) * 60 + float(seconds))
 
 def from_seconds(seconds, signed=False):
     '''
