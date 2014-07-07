@@ -13,7 +13,8 @@ V=""
 if [ "$1" == "-v" ]; then V=1; fi
 if [ "$1" == "--verbose" ]; then V=1; fi
 
-for i in $(git ls-files)
+# from http://stackoverflow.com/questions/18973057/list-all-text-non-binary-files-in-repo, list non-binary files
+for i in $(git grep --cached -I -l -e '')
 do
     if [ ! -z "$V" ]; then echo "$i"; fi
     if [ ! -z "$(grep ' $' "$i")" ]
