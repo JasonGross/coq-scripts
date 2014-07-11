@@ -16,7 +16,11 @@ export TIME_SHELF_NAME=time-of-build-shelf
 
 # this is fragile, I think; try to find a way to make this more
 # robust.
-export MAKE="make $@"
+EXTRA_ARGS=""
+if [ ! -z "$(make --help 2>&1 | grep -- --output-sync)" ]; then
+    EXTRA_ARGS="--output-sync $EXTRA_ARGS"
+fi
+export MAKE="make $EXTRA_ARGS $@"
 
 function relpath() {
     SRC="$(readlink -f "$(pwd)")/"
