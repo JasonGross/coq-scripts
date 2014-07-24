@@ -128,4 +128,4 @@ def make_diff_table_string(left_times_dict, right_times_dict,
                                        name,
                                        right_times_dict.get(name, 0),
                                        diff_times_dict.get(name, 0))
-                      for name in names]).replace(left_rep, 'N/A'.center(len(left_rep) - 3) + ' | ').replace(right_rep, ' | ' + 'N/A'.center(len(right_rep) - 6) + ' || ').replace(far_right_rep, '|| ' + 'N/A'.center(len(far_right_rep) - 3))
+                      for name in names]).replace(left_rep, 'N/A'.center(len(left_rep) - 3) + ' | ').replace(right_rep, ' | ' + 'N/A'.center(len(right_rep) - 7) + ' || ').replace(far_right_rep, '|| ' + 'N/A'.center(len(far_right_rep) - 3))
