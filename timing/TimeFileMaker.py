@@ -122,10 +122,10 @@ def make_diff_table_string(left_times_dict, right_times_dict,
     # separator to go between headers and body
     sep = '-' * len(header)
     # the representation of the default value (0), to get replaced by N/A
-    left_rep, right_rep, far_right_rep = ("%%-%ds" % left_width) % 0, ("%%-%ds" % right_width) % 0, ("%%-%ds" % far_right_width) % 0
+    left_rep, right_rep, far_right_rep = ("%%-%ds | " % left_width) % 0, (" | %%-%ds || " % right_width) % 0, ("|| %%-%ds" % far_right_width) % 0
     return '\n'.join([header, sep, total, sep] +
                      [format_string % (left_times_dict.get(name, 0),
                                        name,
                                        right_times_dict.get(name, 0),
                                        diff_times_dict.get(name, 0))
-                      for name in names]).replace(left_rep, 'N/A'.center(len(left_rep))).replace(right_rep, 'N/A'.center(len(right_rep))).replace(far_right_rep, 'N/A'.center(len(far_right_rep)))
+                      for name in names]).replace(left_rep, 'N/A'.center(len(left_rep) - 3) + ' | ').replace(right_rep, ' | ' + 'N/A'.center(len(right_rep) - 6) + ' || ').replace(far_right_rep, '|| ' + 'N/A'.center(len(far_right_rep) - 3))
