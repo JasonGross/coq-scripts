@@ -20,9 +20,40 @@ cd "$ROOT_DIR"
 # Now find a makefile.  We assume that the top-level makefile is last
 # in git ls-files; we want to pick up everything, whether it is cached
 # or just laying around
-MAKEFILE="$(git ls-files --cached --others *Makefile *makefile *GNUmakefile | tail -1)"
+MAKEFILE="$(git ls-files --cached --others *GNUmakefile *makefile *Makefile | tail -1)"
 if [ ! -z "$MAKEFILE" ]; then
     cd "$(dirname "$MAKEFILE")"
 else
-    echo "WARNING: No Makefile,makefile,GNUmakefile found in git ls-files"
+    echo "WARNING: No GNUmakefile,makefile,Makefile, found in git ls-files"
 fi
+
+MAKEFILE="$((git ls-files --cached --others *Makefile; git ls-files --cached --others *makefile; git ls-files --cached --others *GNUmakefile) | tail -1)"
+
+
+function relpath() {
+    SRC="$(readlink -f "$(pwd)")/"
+    TGT="$(readlink -f "$1")"
+    RET=""
+    while [ ! -z "$SRC$TGT" ]; do
+	# strip the first component off both paths
+	NEXT_SRC="${SRC#*/}"
+	NEXT_TGT="${TGT#*/}"
+	CUR_SRC="${SRC%$NEXT_SRC}"
+	CUR_TGT="${TGT%$NEXT_TGT}"
+	# if they match, and there's something there, then keep going
+	if [ "$CUR_SRC" == "$CUR_TGT" ] && [ ! -z "$CUR_SRC" ]; then
+	    SRC="$NEXT_SRC"
+	    TGT="$NEXT_TGT"
+	else
+	    # if they don't match, then the entirety of the target goes into the return (only relevant the first time)
+	    RET="$TGT"
+	    TGT=""
+	    # and then if we've actually stripped something off of SRC, we add a ../ to the beginning of ret
+	    if [ ! -z "$CUR_SRC" ]; then
+		RET="../$RET"
+		SRC="$NEXT_SRC"
+	    fi
+	fi
+    done
+    echo "$RET"
+}

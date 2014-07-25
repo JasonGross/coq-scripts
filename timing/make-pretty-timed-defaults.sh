@@ -21,31 +21,3 @@ if [ ! -z "$(make --help 2>&1 | grep -- --output-sync)" ]; then
     EXTRA_ARGS="--output-sync $EXTRA_ARGS"
 fi
 export MAKE="make $EXTRA_ARGS $@"
-
-function relpath() {
-    SRC="$(readlink -f "$(pwd)")/"
-    TGT="$(readlink -f "$1")"
-    RET=""
-    while [ ! -z "$SRC$TGT" ]; do
-	# strip the first component off both paths
-	NEXT_SRC="${SRC#*/}"
-	NEXT_TGT="${TGT#*/}"
-	CUR_SRC="${SRC%$NEXT_SRC}"
-	CUR_TGT="${TGT%$NEXT_TGT}"
-	# if they match, then keep going
-	if [ "$CUR_SRC" == "$CUR_TGT" ]; then
-	    SRC="$NEXT_SRC"
-	    TGT="$NEXT_TGT"
-	else
-	    # if they don't match, then the entirety of the target goes into the return (only relevant the first time)
-	    RET="$TGT"
-	    TGT=""
-	    # and then if we've actually stripped something off of SRC, we add a ../ to the beginning of ret
-	    if [ ! -z "$CUR_SRC" ]; then
-		RET="../$RET"
-		SRC="$NEXT_SRC"
-	    fi
-	fi
-    done
-    echo "$RET"
-}
