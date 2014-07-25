@@ -43,12 +43,10 @@ then
     DOT=dot
 fi
 
-echo "$HASKELL"
 if [ -z "$HASKELL" ]
 then
     HASKELL=runhaskell
 fi
-echo "$HASKELL"
 
 type runhaskell 2>&1 >/dev/null
 if [ $? -ne 0 ]

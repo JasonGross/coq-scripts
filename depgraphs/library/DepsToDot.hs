@@ -113,7 +113,7 @@ data PathMap = PathMap {
 }
 
 canonicalizePath :: String → String
-canonicalizePath arg = (tryStripPostfix "/" $ tryStripPrefix "./" arg) ++ "/"
+canonicalizePath arg = tryStripPrefix "./" $ (tryStripPostfix "/" arg) ++ "/"
 
 splitOnEq :: String → (String, String)
 splitOnEq str = (takeWhile (/= '=') str, dropWhile (== '=') $ dropWhile (/= '=') str)
@@ -132,7 +132,6 @@ splitPathRep arg = ( tryStripPrefix "./" $ fst arg'
                    , tryStripPrefix "./" $ snd arg' )
   where arg' = splitOnEq arg
 
--- FIXME: This doesn't work; fix it (or maybe the fold doesn't work)
 parseColor :: String → (String, X11Color)
 parseColor arg = (tryStripPrefix "./" $ fst arg', read $ snd arg')
   where arg' = splitOnEq arg
