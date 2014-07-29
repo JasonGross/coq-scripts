@@ -7,7 +7,7 @@ source "$DIR/../pushd-root.sh"
 # exit immediately if killed
 trap "exit 1" SIGHUP SIGINT SIGTERM
 
-if [ -z "$(fine . -name "*.timing")" ]
+if [ -z "$(find . -name "*.timing")" ]
 then
     exit 0 # no timing files exist
 fi
