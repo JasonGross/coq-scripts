@@ -18,11 +18,13 @@ NEW_FILENAME: The name of the file to store the output of timing the
               compilation of the current state of the library
 
 OLD_FILENAME: The name of the file to store the output of timing the
-              compilation of the state of HEAD^. The command `git
-              checkout` is used to obtain that state.  If this script
-              is interrupted or finishes, `git checkout` is used to
-              restore the current HEAD.  If there are staged but
-              uncommitted changes, this script will exit immediately.
+              compilation of the state of PREV_COMMIT. The command
+              `git checkout` is used to obtain that state.  If this
+              script is interrupted or finishes, `git checkout` is
+              used to restore the current HEAD.  If there are staged
+              but uncommitted changes, this script will exit
+              immediately.  PREV_COMMIT defaults to HEAD^, and is read
+              from the environment.
 
 EOF
 fi
@@ -34,6 +36,11 @@ source "$DIR/../pushd-root.sh"
 MAKE="$1"
 NEW_FILE="$2"
 OLD_FILE="$3"
+
+if [ -z "$PREV_COMMIT" ]
+then
+    PREV_COMMIT="HEAD^"
+fi
 
 # ensure that we have no changes
 if [ ! -z "$(git status | grep '^# Changes to be committed:$')" ]
@@ -62,7 +69,7 @@ echo 'If this is wrong, break immediately with ^C'
 # if we're interrupted, first run `git checkout $HEAD` to clean up
 trap "git checkout '$BRANCH_MOV' && exit 1" SIGHUP SIGINT SIGTERM
 
-git checkout HEAD^
+git checkout "$PREV_COMMIT"
 
 # we must `make clean` so we have a fresh slate, and time _all_ the
 # files
