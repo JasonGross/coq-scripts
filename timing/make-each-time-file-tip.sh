@@ -69,7 +69,7 @@ echo 'If this is wrong, break immediately with ^C'
 # if we're interrupted, first run `git checkout $HEAD` to clean up
 trap "git checkout '$BRANCH_MOV' && exit 1" SIGHUP SIGINT SIGTERM
 
-git checkout "$PREV_COMMIT"
+git checkout "$PREV_COMMIT" || exit 1
 
 # we must `make clean` so we have a fresh slate, and time _all_ the
 # files
@@ -80,7 +80,7 @@ $MAKE TIMED=1 -k 2>&1 | tee "$OLD_FILE"
 
 
 # there is a diff, so restore the changes
-git checkout "$BRANCH_MOV"
+git checkout "$BRANCH_MOV" || exit 1
 # now if we're interrupted, we should only exit immediately
 trap "exit 1" SIGHUP SIGINT SIGTERM
 # we must `make clean` so we have a fresh slate, and time _all_ the
