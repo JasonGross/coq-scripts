@@ -42,6 +42,9 @@ endif
 coq-version:
 	@ echo $(COQ_VERSION)
 
+clean::
+	rm -f $(COMPATIBILITY_FILE) _CoqProject
+
 ifeq (,$(wildcard $(COMPATIBILITY_FILE)))
 warn-compat-file::
 	@ echo "## "
