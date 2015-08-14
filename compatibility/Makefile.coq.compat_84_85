@@ -52,11 +52,11 @@ warn-compat-file::
 	@ true
 endif
 
-$(COMPATIBILITY_FILE): src/Common/Coq__8_4__Compat.v src/Common/Coq__8_5__Compat.v warn-compat-file
+$(COMPATIBILITY_FILE): $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_4__Compat.v $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_5__Compat.v warn-compat-file
 	$(Q) $(MAKE) compatibility
 
-COMPAT_IS_84 = $(shell cmp -s src/Common/Coq__8_4__Compat.v $(COMPATIBILITY_FILE); echo $$?)
-COMPAT_IS_85 = $(shell cmp -s src/Common/Coq__8_5__Compat.v $(COMPATIBILITY_FILE); echo $$?)
+COMPAT_IS_84 = $(shell cmp -s $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_4__Compat.v $(COMPATIBILITY_FILE); echo $$?)
+COMPAT_IS_85 = $(shell cmp -s $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_5__Compat.v $(COMPATIBILITY_FILE); echo $$?)
 
 ifeq ($(COMPAT_IS_84),0)
 v8.4::
