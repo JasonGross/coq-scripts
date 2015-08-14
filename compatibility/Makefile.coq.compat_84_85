@@ -37,7 +37,7 @@ coq-version:
 
 # http://stackoverflow.com/a/18137056/377022
 Makefile_coq_compat_84_85_mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
-Makefile_coq_compat_84_85_mkfile_dir := $(patsubst %/,%,$(dir $(Makefile_coq_compat_84_85_mkfile_path))))
+Makefile_coq_compat_84_85_mkfile_dir := $(patsubst %/,%,$(dir $(Makefile_coq_compat_84_85_mkfile_path)))
 Makefile_coq_compat_84_85_current_dir := $(notdir $(Makefile_coq_compat_84_85_mkfile_dir))
 
 $(VFILES:.v=.v.d): | $(COMPATIBILITY_FILE)
