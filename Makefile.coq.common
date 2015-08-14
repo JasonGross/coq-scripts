@@ -40,9 +40,10 @@ TIMER=$(if $(TIMED), $(STDTIME), $(TIMECMD))
 containing = $(foreach v,$2,$(if $(findstring $1,$v),$v))
 not-containing = $(foreach v,$2,$(if $(findstring $1,$v),,$v))
 
-.PHONY: clean FORCE
+.PHONY: clean FORCE $(UPDATE_COQPROJECT_TARGET)
 
 FAST_TARGETS += archclean clean cleanall printenv clean-old $(UPDATE_COQPROJECT_TARGET) Makefile.coq
+SUPER_FAST_TARGETS += $(UPDATE_COQPROJECT_TARGET) Makefile.coq
 
 # pipe the output of coq_makefile through sed so that we don't have to run coqdep just to clean
 # use tr to handle the fact that BSD sed doesn't substitute \n
@@ -50,7 +51,13 @@ Makefile.coq: Makefile _CoqProject
 	$(VECHO) "COQ_MAKEFILE -f _CoqProject > $@"
 	$(Q)$(COQBIN)coq_makefile COQC = "\$$(SILENCE_COQC)\$$(TIMER) \"\$$(COQBIN)coqc\"" COQDEP = "\$$(SILENCE_COQDEP)\"\$$(COQBIN)coqdep\" -c" -f _CoqProject | sed s'|^\(-include.*\)$$|ifneq ($$(filter-out $(FAST_TARGETS),$$(MAKECMDGOALS)),)~\1~else~ifeq ($$(MAKECMDGOALS),)~\1~endif~endif|g' | tr '~' '\n' | sed s'/^clean:$$/clean-old::/g' | sed s'/^clean::$$/clean-old::/g' | sed s'/^Makefile: /Makefile-old: /g' > $@
 
+ifneq ($(filter-out $(SUPER_FAST_TARGETS),$(MAKECMDGOALS)),)
 -include Makefile.coq
+else
+ifeq ($(MAKECMDGOALS),)
+-include Makefile.coq
+endif
+endif
 
 # overwrite OCAMLC, OCAMLOPT, OCAMLDEP to make `make` quieter
 OCAMLC_OLD := $(OCAMLC)
