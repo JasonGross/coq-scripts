@@ -95,17 +95,32 @@ v8.5::
 	cp $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_5__Compat.v $(COMPATIBILITY_FILE)
 endif
 
-_COQPROJECT_IS_85 = $(filter -no-native-compiler,$(shell cat _CoqProject))
+_COQPROJECT_HAS_NO_NATIVE_COMPILER = $(filter -no-native-compiler,$(shell cat _CoqProject))
+
+UPDATE_NO_NATIVE_COMPILER =
+ifneq (,$(COQ_SUPPORTS_NO_NATIVE_COMPILER)) # supports -no-native-compiler
+ifneq (,$(_COQPROJECT_HAS_NO_NATIVE_COMPILER)) # and has it
+# we're good
+else
+UPDATE_NO_NATIVE_COMPILER = yes
+endif
+else # doesn't support -no-native-compiler
+ifneq (,$(_COQPROJECT_HAS_NO_NATIVE_COMPILER)) # but uses it
+UPDATE_NO_NATIVE_COMPILER = yes
+else
+# we're good
+endif
+endif
 
 ifneq (,$(wildcard _CoqProject)) # _CoqProject exists
-ifneq (,$(_COQPROJECT_IS_85)) # currently v8.5
+ifneq (,$(UPDATE_NO_NATIVE_COMPILER))
 v8.4::
 	@ echo "## "
 	@ echo "## Remaking _CoqProject for Coq v8.4"
 	@ echo "## "
 	rm -f _CoqProject
 	$(MAKE) _CoqProject
-else # current v8.4
+
 v8.5::
 	@ echo "## "
 	@ echo "## Remaking _CoqProject for Coq v8.5"
