@@ -30,8 +30,10 @@ Makefile_coq_compat_84_85_current_dir := $(notdir $(Makefile_coq_compat_84_85_mk
 COQ_VERSION_PREFIX = The Coq Proof Assistant, version
 COQ_VERSION = $(firstword $(subst $(COQ_VERSION_PREFIX),,$(shell $(COQBIN)coqc --version 2>/dev/null)))
 
+COQ_SUPPORTS_NO_NATIVE_COMPILER = $(filter -no-native-compiler,$(shell $(COQBIN)coqc -help 2>&1))
+
 # the native compiler is broken on Windows, so we disable it in 8.5
-ifneq (,$(filter 8.5%,$(COQ_VERSION))) # 8.5
+ifneq (,$(COQ_SUPPORTS_NO_NATIVE_COMPILER)) # 8.5
 _CoqProject: $(_COQPROJECT_IN_NAME)
 	(echo "-arg -no-native-compiler"; cat "$<") > "$@"
 else
@@ -39,8 +41,16 @@ _CoqProject: $(_COQPROJECT_IN_NAME)
 	cat "$<" > "$@"
 endif
 
-coq-version:
+coq-version::
 	@ echo $(COQ_VERSION)
+
+ifneq (,$(COQ_SUPPORTS_NO_NATIVE_COMPILER)) # 8.5
+coq-version::
+	@ echo "Supports -no-native-compiler: Yes"
+else
+coq-version::
+	@ echo "Supports -no-native-compiler: No"
+endif
 
 clean::
 	rm -f $(COMPATIBILITY_FILE) _CoqProject
