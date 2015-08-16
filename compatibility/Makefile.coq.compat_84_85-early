@@ -95,6 +95,7 @@ v8.5::
 	cp $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_5__Compat.v $(COMPATIBILITY_FILE)
 endif
 
+ifneq (,$(wildcard _CoqProject)) # _CoqProject exists
 _COQPROJECT_HAS_NO_NATIVE_COMPILER = $(filter -no-native-compiler,$(shell cat _CoqProject))
 
 UPDATE_NO_NATIVE_COMPILER =
@@ -112,7 +113,6 @@ else
 endif
 endif
 
-ifneq (,$(wildcard _CoqProject)) # _CoqProject exists
 ifneq (,$(UPDATE_NO_NATIVE_COMPILER))
 v8.4::
 	@ echo "## "
