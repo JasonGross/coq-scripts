@@ -101,10 +101,10 @@ vo_to_installv = $(addsuffix .v,$(basename $(call vo_closure,$(filter %.vo,$1)))
 
 SORT_COQPROJECT = sed 's,[^/]*/,~&,g' | env LC_COLLATE=C sort | sed 's,~,,g'
 
-$(VOFILES): FORCE
-
 MISSING_COQPROJECT_VFILES = $(addsuffix .v,$(basename $(filter-out $(VOFILES),$(call vo_closure,$(VOFILES)))))
 ifneq (,$(MISSING_COQPROJECT_VFILES))
+$(VOFILES): FORCE
+
 FORCE::
 	@ echo
 	@ echo 'error: $(MISSING_COQPROJECT_VFILES) is missing from $(_COQPROJECT_NAME).'
@@ -115,6 +115,8 @@ endif
 
 NONEXISTANT_COQPROJECT_VFILES = $(filter-out $(_COQPROJECT_EXCLUDED_VFILES) $(wildcard $(VFILES)),$(VFILES))
 ifneq (,$(NONEXISTANT_COQPROJECT_VFILES))
+$(VOFILES): FORCE
+
 FORCE::
 	@ echo
 	@ echo 'error: $(NONEXISTANT_COQPROJECT_VFILES) is in $(_COQPROJECT_NAME) but does not exist.'

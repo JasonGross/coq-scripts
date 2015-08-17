@@ -3,6 +3,8 @@ _COQPROJECT_IN_NAME?=_CoqProject.in
 _COQPROJECT_NAME?=_CoqProject.in
 
 ifeq (,$(COMPATIBILITY_FILE))
+$(VOFILES): FORCE
+
 FORCE::
 	@ echo
 	@ echo "error: You must set the COMPATIBILITY_FILE variable to a .v file to contain the compatibiltiy Coq code"
