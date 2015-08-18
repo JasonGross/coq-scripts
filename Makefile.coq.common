@@ -44,7 +44,7 @@ TIMER=$(if $(TIMED), $(STDTIME), $(TIMECMD))
 containing = $(foreach v,$2,$(if $(findstring $1,$v),$v))
 not-containing = $(foreach v,$2,$(if $(findstring $1,$v),,$v))
 
-.PHONY: clean FORCE $(UPDATE_COQPROJECT_TARGET) clean-unmade error-if-clean-unmade check-clean-unmade
+.PHONY: clean FORCE $(UPDATE_COQPROJECT_TARGET) clean-unmade error-if-clean-unmade check-clean-unmade selective-clean-unmade
 
 FAST_TARGETS += archclean clean cleanall printenv clean-old $(UPDATE_COQPROJECT_TARGET) Makefile.coq
 SUPER_FAST_TARGETS += $(UPDATE_COQPROJECT_TARGET) Makefile.coq
@@ -142,3 +142,8 @@ else
 error-if-clean-unmade::
 
 endif
+
+files_to_vo_vi_vio = $(wildcard $(addsuffix .vo,$1) $(addsuffix .vi,$1) $(addsuffix .vio,$1))
+
+selective-clean-unmade::
+	rm -f $(call files_to_vo_vi_vio,$(filter-out $(basename $(call vo_closure,$(filter %.vo,$(T)))),$(basename $(VOFILES))))
