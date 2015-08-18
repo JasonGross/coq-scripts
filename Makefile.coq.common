@@ -147,3 +147,9 @@ files_to_vo_vi_vio = $(wildcard $(addsuffix .vo,$1) $(addsuffix .vi,$1) $(addsuf
 
 selective-clean-unmade::
 	rm -f $(call files_to_vo_vi_vio,$(filter-out $(basename $(call vo_closure,$(filter %.vo,$(T)))),$(basename $(VOFILES))))
+
+selective-vio2vo:
+	$(COQC) $(COQDEBUG) $(COQFLAGS) -schedule-vio2vo $(J) $(addsuffix .vio,$(basename $(call vo_closure,$(filter %.vo,$(T)))))
+
+selective-checkproofs:
+	$(COQC) $(COQDEBUG) $(COQFLAGS) -schedule-vio-checking $(J) $(addsuffix .vio,$(basename $(call vo_closure,$(filter %.vo,$(T)))))
