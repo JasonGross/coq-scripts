@@ -143,7 +143,8 @@ error-if-clean-unmade::
 
 endif
 
-files_to_vo_vi_vio = $(wildcard $(addsuffix .vo,$1) $(addsuffix .vi,$1) $(addsuffix .vio,$1))
+files_to_pre_vo_vi_vio = $(addsuffix .vo,$1) $(addsuffix .vi,$1) $(addsuffix .vio,$1)
+files_to_vo_vi_vio = $(wildcard $(call files_to_pre_vo_vi_vio,$1))
 
 selective-clean-unmade::
 	rm -f $(call files_to_vo_vi_vio,$(filter-out $(basename $(call vo_closure,$(filter %.vo,$(T)))),$(basename $(VOFILES))))
