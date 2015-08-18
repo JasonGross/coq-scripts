@@ -142,8 +142,9 @@ endif
 ifneq (,$(filter clean-unmade,$(MAKECMDGOALS)))
 # get the list of targets that actually get run, without clean-unmade
 RECURSIVE_TARGETS_WITHOUT_CLEAN_UNMADE := $(shell $(MAKE) --dry-run --debug error-if-clean-unmade $(filter-out clean-unmade,$(MAKECMDGOALS)) 2>&1 | grep -o "Must remake target '[^']*" | sed s"/Must remake target '//g")
-RECURSIVELY_ALL_MADE_VO_FILES := $(call vo_closure,$(filter %.vo,$(RECURSIVE_TARGETS_WITHOUT_CLEAN_UNMADE)))
-FILES_TO_REMOVE := $(filter-out $(RECURSIVELY_ALL_MADE_VO_FILES),$(wildcard $(VOFILES)))
+RECURSIVELY_ALL_MADE_VO_FILES := $(call vo_closure,$(addsuffix .vo,$(basename $(filter %.vio %.vi %.vo,$(RECURSIVE_TARGETS_WITHOUT_CLEAN_UNMADE)))))
+PRE_FILES_TO_REMOVE := $(filter-out $(basename $(RECURSIVELY_ALL_MADE_VO_FILES)),$(basename $(VOFILES)))
+FILES_TO_REMOVE := $(wildcard $(addsuffix .vo,$(PRE_FILES_TO_REMOVE)) $(addsuffix .vi,$(PRE_FILES_TO_REMOVE)) $(addsuffix .vio,$(PRE_FILES_TO_REMOVE)))
 else
 FILES_TO_REMOVE :=
 endif
