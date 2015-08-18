@@ -10,8 +10,10 @@ FILES_TO_REMOVE := $(wildcard $(addsuffix .vo,$(PRE_FILES_TO_REMOVE)) $(addsuffi
 
 ifneq (,$(FILES_TO_REMOVE))
 clean-unmade::
+	@ echo "Warning: clean-unmade probably will not do what you want it to; I couldn't get it working"
 	rm -f $(FILES_TO_REMOVE)
 else
 clean-unmade::
+	@ echo "Warning: clean-unmade probably will not do what you want it to; I couldn't get it working"
 	@ echo "No outdated .vo files which will not be remade"
 endif
