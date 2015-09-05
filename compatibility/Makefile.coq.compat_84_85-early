@@ -1,6 +1,7 @@
 COMPATIBILITY_FILE?=
 _COQPROJECT_IN_NAME?=_CoqProject.in
 _COQPROJECT_NAME?=_CoqProject.in
+COQ_VERSION_FILE=.coq-version
 
 # http://stackoverflow.com/a/18137056/377022
 Makefile_coq_compat_84_85_mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -52,8 +53,17 @@ coq-version::
 	@ echo "Supports -no-native-compiler: No"
 endif
 
+COQ_EXTENDED_VERSION = $(shell (echo | $(COQBIN)coqtop 2>/dev/null; $(COQBIN)coqc --version 2>/dev/null))
+COQ_EXTENDED_VERSION_OLD = $(shell cat $(COQ_VERSION_FILE) 2>/dev/null)
+
+ifneq ($(COQ_EXTENDED_VERSION),$(COQ_EXTENDED_VERSION_OLD))
+$(COQ_VERSION_FILE):
+	$(VECHO) 'echo $$COQ_VERSION_INFO ($(COQ_VERSION)) > $@'
+	$(Q)echo "$(COQ_EXTENDED_VERSION)" > $@
+endif
+
 clean::
-	rm -f $(COMPATIBILITY_FILE) _CoqProject
+	rm -f $(COMPATIBILITY_FILE) _CoqProject $(COQ_VERSION_FILE)
 
 ifeq (,$(wildcard $(COMPATIBILITY_FILE)))
 warn-compat-file::
