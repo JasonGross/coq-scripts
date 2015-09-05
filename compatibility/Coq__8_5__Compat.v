@@ -26,3 +26,18 @@ Tactic Notation "constructor" int_or_var(n) := constructor_84_n n.
 Tactic Notation "constructor" "(" tactic(tac) ")" := constructor_84_tac tac.
 
 Global Set Regular Subst Tactic.
+
+(** Some names have changed in the standard library, so we add aliases. *)
+Require Coq.ZArith.Int.
+Module Export Coq.
+  Module Export ZArith.
+    Module Int.
+      Module Z_as_Int.
+        Include Coq.ZArith.Int.Z_as_Int.
+        Notation plus := Coq.ZArith.Int.Z_as_Int.add (only parsing).
+        Notation minus := Coq.ZArith.Int.Z_as_Int.sub (only parsing).
+        Notation mult := Coq.ZArith.Int.Z_as_Int.mul (only parsing).
+      End Z_as_Int.
+    End Int.
+  End ZArith.
+End Coq.
