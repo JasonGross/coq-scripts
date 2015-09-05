@@ -41,3 +41,6 @@ Module Export Coq.
     End Int.
   End ZArith.
 End Coq.
+
+(** Many things now import [PeanoNat] rather than [NPeano], so we require it so that the old absolute names in [NPeano.Nat] are available. *)
+Require Coq.Numbers.Natural.Peano.NPeano.
