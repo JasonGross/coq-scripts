@@ -57,7 +57,7 @@ COQ_EXTENDED_VERSION = $(shell (echo | $(COQBIN)coqtop 2>/dev/null; $(COQBIN)coq
 COQ_EXTENDED_VERSION_OLD = $(shell cat $(COQ_VERSION_FILE) 2>/dev/null)
 
 ifneq ($(COQ_EXTENDED_VERSION),$(COQ_EXTENDED_VERSION_OLD))
-$(COQ_VERSION_FILE):
+$(COQ_VERSION_FILE)::
 	$(VECHO) 'echo $$COQ_VERSION_INFO ($(COQ_VERSION)) > $@'
 	$(Q)echo "$(COQ_EXTENDED_VERSION)" > $@
 endif
