@@ -16,10 +16,10 @@ FORCE::
 	@ false
 endif
 
-.PHONY: compatibility v8.4 v8.5 warn-compat-file
+.PHONY: compatibility v8.4 v8.5 v8.5beta1 warn-compat-file
 
-FAST_TARGETS += coq-version $(COMPATIBILITY_FILE) compatibility v8.4 v8.5 _CoqProject warn-compat-file
-SUPER_FAST_TARGETS += coq-version $(COMPATIBILITY_FILE) compatibility v8.4 v8.5 _CoqProject warn-compat-file $(COQ_VERSION_FILE)
+FAST_TARGETS += coq-version $(COMPATIBILITY_FILE) compatibility v8.4 v8.5 v8.5beta1 _CoqProject warn-compat-file
+SUPER_FAST_TARGETS += coq-version $(COMPATIBILITY_FILE) compatibility v8.4 v8.5 v8.5beta1 _CoqProject warn-compat-file $(COQ_VERSION_FILE)
 
 _COQPROJECT_EXCLUDED_VFILES += $(COMPATIBILITY_FILE)
 
@@ -80,6 +80,7 @@ $(COMPATIBILITY_FILE): $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_4__Compat.
 
 COMPAT_IS_84 = $(shell cmp -s $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_4__Compat.v $(COMPATIBILITY_FILE); echo $$?)
 COMPAT_IS_85 = $(shell cmp -s $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_5__Compat.v $(COMPATIBILITY_FILE); echo $$?)
+COMPAT_IS_85beta1 = $(shell cmp -s $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_5beta1__Compat.v $(COMPATIBILITY_FILE); echo $$?)
 
 ifeq ($(COMPAT_IS_84),0)
 v8.4::
@@ -103,6 +104,18 @@ v8.5::
 	@ echo "## "
 	rm -f $(COMPATIBILITY_FILE)
 	cp $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_5__Compat.v $(COMPATIBILITY_FILE)
+endif
+
+ifeq ($(COMPAT_IS_85beta1),0)
+v8.5beta1::
+	@ true
+else
+v8.5beta1::
+	@ echo "## "
+	@ echo "## Switching to compatibility for Coq v8.5beta1"
+	@ echo "## "
+	rm -f $(COMPATIBILITY_FILE)
+	cp $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_5beta1__Compat.v $(COMPATIBILITY_FILE)
 endif
 
 ifneq (,$(wildcard _CoqProject)) # _CoqProject exists
@@ -140,6 +153,10 @@ v8.5::
 endif
 endif
 
+ifneq (,$(filter 8.5beta1,$(COQ_VERSION))) # 8.5beta1
+compatibility::
+	$(MAKE) v8.5beta1
+else
 ifneq (,$(filter 8.5%,$(COQ_VERSION))) # 8.5
 compatibility::
 	$(MAKE) v8.5
@@ -153,5 +170,6 @@ compatibility::
 	@ echo 'error: unrecognized version of Coq $(COQ_VERSION)'
 	@ echo
 	@ false
+endif
 endif
 endif
