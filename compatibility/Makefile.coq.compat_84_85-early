@@ -18,7 +18,7 @@ endif
 
 .PHONY: compatibility v8.4 v8.5 v8.5beta1 warn-compat-file
 
-FAST_TARGETS += coq-version $(COMPATIBILITY_FILE) compatibility v8.4 v8.5 v8.5beta1 _CoqProject warn-compat-file
+FAST_TARGETS += coq-version $(COMPATIBILITY_FILE) compatibility v8.4 v8.5 v8.5beta1 _CoqProject warn-compat-file $(COQ_VERSION_FILE)
 SUPER_FAST_TARGETS += coq-version $(COMPATIBILITY_FILE) compatibility v8.4 v8.5 v8.5beta1 _CoqProject warn-compat-file $(COQ_VERSION_FILE)
 
 _COQPROJECT_EXCLUDED_VFILES += $(COMPATIBILITY_FILE)
