@@ -11,7 +11,7 @@ Global Set Universal Lemma Under Conjunction.
 
 (** In 8.4, [admit] created a new axiom; in 8.5, it just shelves the goal. *)
 Axiom proof_admitted : False.
-Ltac admit := abstract case proof_admitted.
+Ltac admit := clear; abstract case proof_admitted.
 
 (** In 8.5, [refine] leaves over dependent subgoals. *)
 Tactic Notation "refine" uconstr(term) := refine term; shelve_unifiable.
