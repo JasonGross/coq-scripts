@@ -76,7 +76,7 @@ warn-compat-file::
 endif
 
 $(COMPATIBILITY_FILE): $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_4__Compat.v $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_5__Compat.v warn-compat-file
-	$(Q) $(MAKE) compatibility
+	$(Q) $(MAKE) --no-print-directory compatibility
 
 COMPAT_IS_84 = $(shell cmp -s $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_4__Compat.v $(COMPATIBILITY_FILE); echo $$?)
 COMPAT_IS_85 = $(shell cmp -s $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_5__Compat.v $(COMPATIBILITY_FILE); echo $$?)
@@ -142,28 +142,28 @@ v8.4::
 	@ echo "## Remaking _CoqProject for Coq v8.4"
 	@ echo "## "
 	rm -f _CoqProject
-	$(MAKE) _CoqProject
+	$(MAKE) --no-print-directory _CoqProject
 
 v8.5::
 	@ echo "## "
 	@ echo "## Remaking _CoqProject for Coq v8.5"
 	@ echo "## "
 	rm -f _CoqProject
-	$(MAKE) _CoqProject
+	$(MAKE) --no-print-directory _CoqProject
 endif
 endif
 
 ifneq (,$(filter 8.5beta1,$(COQ_VERSION))) # 8.5beta1
 compatibility::
-	$(MAKE) v8.5beta1
+	$(MAKE) --no-print-directory v8.5beta1
 else
 ifneq (,$(filter 8.5%,$(COQ_VERSION))) # 8.5
 compatibility::
-	$(MAKE) v8.5
+	$(MAKE) --no-print-directory v8.5
 else
 ifneq (,$(filter 8.4%,$(COQ_VERSION))) # 8.4
 compatibility::
-	$(MAKE) v8.4
+	$(MAKE) --no-print-directory v8.4
 else
 compatibility::
 	@ echo
