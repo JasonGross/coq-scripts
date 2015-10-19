@@ -17,7 +17,7 @@ SILENCE_COQDEP_1 =
 SILENCE_COQDEP = $(SILENCE_COQDEP_$(V))
 
 ifeq ($(STRICT_COQDEP),1)
-  SILENCE_COQDEP += "$(Makefile_coq_common_mkfile_dir)/strictify-coqdep.py" #
+  SILENCE_COQDEP += python "$(Makefile_coq_common_mkfile_dir)/strictify-coqdep.py" #
 endif
 
 SILENCE_OCAMLC_0 = @echo "OCAMLC $<"; #
