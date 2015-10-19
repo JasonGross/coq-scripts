@@ -16,6 +16,10 @@ SILENCE_COQDEP_0 = @echo "COQDEP $<"; #
 SILENCE_COQDEP_1 =
 SILENCE_COQDEP = $(SILENCE_COQDEP_$(V))
 
+ifeq ($(STRICT_COQDEP),1)
+  SILENCE_COQDEP += "$(Makefile_coq_common_mkfile_dir)/strictify-coqdep.py" #
+endif
+
 SILENCE_OCAMLC_0 = @echo "OCAMLC $<"; #
 SILENCE_OCAMLC_1 =
 SILENCE_OCAMLC = $(SILENCE_OCAMLC_$(V))
