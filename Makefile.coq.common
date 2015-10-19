@@ -55,6 +55,11 @@ Makefile.coq: Makefile _CoqProject
 	$(VECHO) "COQ_MAKEFILE -f _CoqProject > $@"
 	$(Q)$(COQBIN)coq_makefile COQC = "\$$(SILENCE_COQC)\$$(TIMER) \"\$$(COQBIN)coqc\"" COQDEP = "\$$(SILENCE_COQDEP)\"\$$(COQBIN)coqdep\" -c" -f _CoqProject | sed s'|^\(-include.*\)$$|ifneq ($$(filter-out $(FAST_TARGETS),$$(MAKECMDGOALS)),)~\1~else~ifeq ($$(MAKECMDGOALS),)~\1~endif~endif|g' | tr '~' '\n' | sed s'/^clean:$$/clean-old::/g' | sed s'/^clean::$$/clean-old::/g' | sed s'/^Makefile: /Makefile-old: /g' > $@
 
+# Quoting CAMLP4BIN on Windows results in "The input line is too long." (https://coq.inria.fr/bugs/show_bug.cgi?id=4266)
+# So we manually unquote it.  We just pre-empt Makefile.coq's setting of it (included here for reference)
+# PP?=-pp '"$(CAMLP4BIN)$(CAMLP4)o" -I "$(CAMLLIB)" -I . $(COQSRCLIBS) $(CAMLP4EXTEND) $(GRAMMARS) $(CAMLP4OPTIONS) -impl'
+PP?=-pp '$(CAMLP4BIN)$(CAMLP4)o -I "$(CAMLLIB)" -I . $(COQSRCLIBS) $(CAMLP4EXTEND) $(GRAMMARS) $(CAMLP4OPTIONS) -impl'
+
 ifneq ($(filter-out $(SUPER_FAST_TARGETS),$(MAKECMDGOALS)),)
 -include Makefile.coq
 else
