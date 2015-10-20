@@ -3,8 +3,10 @@ UPDATE_COQPROJECT_TARGET?=update-_CoqProject
 _COQPROJECT_EXCLUDED_VFILES?=
 
 # http://stackoverflow.com/a/18137056/377022
-Makefile_coq_common_mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
+Makefile_coq_common_mkfile_path := $(lastword $(MAKEFILE_LIST))
+Makefile_coq_common_mkfile_abspath := $(abspath $(Makefile_coq_common_mkfile_path))
 Makefile_coq_common_mkfile_dir := $(patsubst %/,%,$(dir $(Makefile_coq_common_mkfile_path)))
+Makefile_coq_common_mkfile_absdir := $(patsubst %/,%,$(dir $(Makefile_coq_common_mkfile_abspath)))
 
 V = 0
 
