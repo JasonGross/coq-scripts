@@ -4,9 +4,12 @@ _COQPROJECT_NAME?=_CoqProject.in
 COQ_VERSION_FILE=.coq-version
 
 # http://stackoverflow.com/a/18137056/377022
-Makefile_coq_compat_84_85_mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
+Makefile_coq_compat_84_85_mkfile_path := $(lastword $(MAKEFILE_LIST))
+Makefile_coq_compat_84_85_mkfile_abspath := $(abspath $(Makefile_coq_compat_84_85_mkfile_path))
 Makefile_coq_compat_84_85_mkfile_dir := $(patsubst %/,%,$(dir $(Makefile_coq_compat_84_85_mkfile_path)))
+Makefile_coq_compat_84_85_mkfile_absdir := $(patsubst %/,%,$(dir $(Makefile_coq_compat_84_85_mkfile_abspath)))
 Makefile_coq_compat_84_85_current_dir := $(notdir $(Makefile_coq_compat_84_85_mkfile_dir))
+Makefile_coq_compat_84_85_current_absdir := $(notdir $(Makefile_coq_compat_84_85_mkfile_absdir))
 
 ifeq (,$(COMPATIBILITY_FILE))
 FORCE::
@@ -26,7 +29,6 @@ _COQPROJECT_EXCLUDED_VFILES += $(COMPATIBILITY_FILE)
 ifeq ($(_COQPROJECT_NAME),_CoqProject)
 _COQPROJECT_NAME = $(_COQPROJECT_IN_NAME)
 endif
-
 
 COQ_VERSION_PREFIX = The Coq Proof Assistant, version
 COQ_VERSION = $(firstword $(subst $(COQ_VERSION_PREFIX),,$(shell $(COQBIN)coqc --version 2>/dev/null)))
@@ -154,18 +156,15 @@ endif
 endif
 
 ifneq (,$(filter 8.5beta1,$(COQ_VERSION))) # 8.5beta1
-compatibility::
-	$(MAKE) --no-print-directory v8.5beta1
+compatibility: v8.5beta1
 else
 ifneq (,$(filter 8.5%,$(COQ_VERSION))) # 8.5
-compatibility::
-	$(MAKE) --no-print-directory v8.5
+compatibility: v8.5
 else
 ifneq (,$(filter 8.4%,$(COQ_VERSION))) # 8.4
-compatibility::
-	$(MAKE) --no-print-directory v8.4
+compatibility: v8.4
 else
-compatibility::
+compatibility:
 	@ echo
 	@ echo 'error: unrecognized version of Coq $(COQ_VERSION)'
 	@ echo
@@ -173,3 +172,24 @@ compatibility::
 endif
 endif
 endif
+
+test_exists_ml_function = $(strip $(shell FUNCTION="$1" COQBIN="$(COQBIN)" $(Makefile_coq_compat_84_85_mkfile_dir)/test-exists-ml-function.sh >/dev/null 2>/dev/null; echo $$?))
+
+update-ml-files:: FORCE
+	@ echo "## "
+	@ echo '## Switching to OCaml files for $(ML_DESCRIPTION).'
+	@ echo "## "
+
+define SET_ML_COMPATIBILITY
+# $(1) - path to base ml file
+# $(2) - expected extension
+
+ifneq ($(call test_files_are_same,$(1),$(1)$(2)),0)
+$(1): update-ml-files
+
+update-ml-files::
+	$(VECHO) "CP $(1)$(2)"
+	$(Q)cp -f "$(1)$(2)" "$(1)"
+	$(Q)touch "$(1)"
+endif
+endef

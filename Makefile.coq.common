@@ -74,6 +74,19 @@ ifeq ($(MAKECMDGOALS),)
 endif
 endif
 
+# 0 if same, 1 if different
+test_files_are_same = $(shell cmp -s $(1) $(2); echo $$?)
+
+IS_FAST := 1
+
+ifneq ($(filter-out $(SUPER_FAST_TARGETS) $(FAST_TARGETS),$(MAKECMDGOALS)),)
+IS_FAST := 0
+else
+ifeq ($(MAKECMDGOALS),)
+IS_FAST := 0
+endif
+endif
+
 # overwrite OCAMLC, OCAMLOPT, OCAMLDEP to make `make` quieter
 OCAMLC_OLD := $(OCAMLC)
 OCAMLC = $(SILENCE_OCAMLC)$(OCAMLC_OLD)
