@@ -1,0 +1,28 @@
+# http://stackoverflow.com/a/18137056/377022
+Makefile_coq_compat_84_85_ocaml_mkfile_path := $(lastword $(MAKEFILE_LIST))
+Makefile_coq_compat_84_85_ocaml_mkfile_abspath := $(abspath $(Makefile_coq_compat_84_85_ocaml_mkfile_path))
+Makefile_coq_compat_84_85_ocaml_mkfile_dir := $(patsubst %/,%,$(dir $(Makefile_coq_compat_84_85_ocaml_mkfile_path)))
+Makefile_coq_compat_84_85_ocaml_mkfile_absdir := $(patsubst %/,%,$(dir $(Makefile_coq_compat_84_85_ocaml_mkfile_abspath)))
+Makefile_coq_compat_84_85_ocaml_current_dir := $(notdir $(Makefile_coq_compat_84_85_ocaml_mkfile_dir))
+Makefile_coq_compat_84_85_ocaml_current_absdir := $(notdir $(Makefile_coq_compat_84_85_ocaml_mkfile_absdir))
+
+test_exists_ml_function = $(strip $(shell FUNCTION="$1" COQBIN="$(COQBIN)" $(Makefile_coq_compat_84_85_ocaml_mkfile_dir)/test-exists-ml-function.sh >/dev/null 2>/dev/null; echo $$?))
+
+update-ml-files:: FORCE
+	@ echo "## "
+	@ echo '## Switching to OCaml files for $(ML_DESCRIPTION).'
+	@ echo "## "
+
+define SET_ML_COMPATIBILITY
+# $(1) - path to base ml file
+# $(2) - expected extension
+
+ifneq ($(call test_files_are_same,$(1),$(1)$(2)),0)
+$(1): update-ml-files
+
+update-ml-files::
+	$(VECHO) "CP $(1)$(2)"
+	$(Q)cp -f "$(1)$(2)" "$(1)"
+	$(Q)touch "$(1)"
+endif
+endef

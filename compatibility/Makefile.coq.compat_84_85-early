@@ -24,6 +24,8 @@ endif
 FAST_TARGETS += coq-version $(COMPATIBILITY_FILE) compatibility v8.4 v8.5 v8.5beta1 _CoqProject warn-compat-file $(COQ_VERSION_FILE)
 SUPER_FAST_TARGETS += coq-version $(COMPATIBILITY_FILE) compatibility v8.4 v8.5 v8.5beta1 _CoqProject warn-compat-file $(COQ_VERSION_FILE)
 
+-include $(Makefile_coq_compat_84_85_mkfile_dir)/Makefile.coq.compat_84_85-ocaml
+
 _COQPROJECT_EXCLUDED_VFILES += $(COMPATIBILITY_FILE)
 
 ifeq ($(_COQPROJECT_NAME),_CoqProject)
@@ -172,24 +174,3 @@ compatibility:
 endif
 endif
 endif
-
-test_exists_ml_function = $(strip $(shell FUNCTION="$1" COQBIN="$(COQBIN)" $(Makefile_coq_compat_84_85_mkfile_dir)/test-exists-ml-function.sh >/dev/null 2>/dev/null; echo $$?))
-
-update-ml-files:: FORCE
-	@ echo "## "
-	@ echo '## Switching to OCaml files for $(ML_DESCRIPTION).'
-	@ echo "## "
-
-define SET_ML_COMPATIBILITY
-# $(1) - path to base ml file
-# $(2) - expected extension
-
-ifneq ($(call test_files_are_same,$(1),$(1)$(2)),0)
-$(1): update-ml-files
-
-update-ml-files::
-	$(VECHO) "CP $(1)$(2)"
-	$(Q)cp -f "$(1)$(2)" "$(1)"
-	$(Q)touch "$(1)"
-endif
-endef
