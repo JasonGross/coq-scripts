@@ -6,6 +6,11 @@ Makefile_coq_compat_84_85_ocaml_mkfile_absdir := $(patsubst %/,%,$(dir $(Makefil
 Makefile_coq_compat_84_85_ocaml_current_dir := $(notdir $(Makefile_coq_compat_84_85_ocaml_mkfile_dir))
 Makefile_coq_compat_84_85_ocaml_current_absdir := $(notdir $(Makefile_coq_compat_84_85_ocaml_mkfile_absdir))
 
+.PHONY: update-ml-files
+
+FAST_TARGETS += update-ml-files
+SUPER_FAST_TARGETS += update-ml-files
+
 test_exists_ml_function = $(strip $(shell FUNCTION="$1" COQBIN="$(COQBIN)" $(Makefile_coq_compat_84_85_ocaml_mkfile_dir)/test-exists-ml-function.sh >/dev/null 2>/dev/null; echo $$?))
 
 update-ml-files:: FORCE
