@@ -16,6 +16,9 @@ Ltac admit := abstract case proof_admitted.
 (** In 8.5, [refine] leaves over dependent subgoals. *)
 Tactic Notation "refine" uconstr(term) := refine term; shelve_unifiable.
 
+Require Coq.Program.Tactics.
+Ltac rapply term := Coq.Program.Tactics.rapply term; shelve_unifiable.
+
 (** In 8.4, [constructor (tac)] allowed backtracking across the use of [constructor]; it has been subsumed by [constructor; tac]. *)
 Ltac constructor_84 := constructor.
 Ltac constructor_84_n n := constructor n.
