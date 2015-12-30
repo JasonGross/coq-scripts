@@ -19,10 +19,10 @@ FORCE::
 	@ false
 endif
 
-.PHONY: compatibility v8.4 v8.5 v8.5beta1 warn-compat-file
+.PHONY: compatibility v8.4 v8.5 v8.5beta1 vtrunk warn-compat-file
 
-FAST_TARGETS += coq-version $(COMPATIBILITY_FILE) compatibility v8.4 v8.5 v8.5beta1 _CoqProject warn-compat-file $(COQ_VERSION_FILE)
-SUPER_FAST_TARGETS += coq-version $(COMPATIBILITY_FILE) compatibility v8.4 v8.5 v8.5beta1 _CoqProject warn-compat-file $(COQ_VERSION_FILE)
+FAST_TARGETS += coq-version $(COMPATIBILITY_FILE) compatibility v8.4 v8.5 v8.5beta1 vtrunk _CoqProject warn-compat-file $(COQ_VERSION_FILE)
+SUPER_FAST_TARGETS += coq-version $(COMPATIBILITY_FILE) compatibility v8.4 v8.5 v8.5beta1 vtrunk _CoqProject warn-compat-file $(COQ_VERSION_FILE)
 
 -include $(Makefile_coq_compat_84_85_mkfile_dir)/Makefile.coq.compat_84_85-ocaml
 
@@ -35,27 +35,47 @@ endif
 COQ_VERSION_PREFIX = The Coq Proof Assistant, version
 COQ_VERSION = $(firstword $(subst $(COQ_VERSION_PREFIX),,$(shell $(COQBIN)coqc --version 2>/dev/null)))
 
-COQ_SUPPORTS_NO_NATIVE_COMPILER = $(filter -no-native-compiler,$(shell $(COQBIN)coqc -help 2>&1))
+COQ_HELP = $(shell $(COQBIN)coqc -help 2>&1)
 
-# the native compiler is broken on Windows, so we disable it in 8.5
-ifneq (,$(COQ_SUPPORTS_NO_NATIVE_COMPILER)) # 8.5
-_CoqProject: $(_COQPROJECT_IN_NAME)
-	(echo "-arg -no-native-compiler"; cat "$<") > "$@"
-else
-_CoqProject: $(_COQPROJECT_IN_NAME)
-	cat "$<" > "$@"
-endif
+COQ_SUPPORTS_NO_NATIVE_COMPILER = $(filter -no-native-compiler,$(COQ_HELP))
+COQ_NOT_SUPPORTS_COMPAT_8_4 = $(filter Error: Unknown compatibility version,$(shell echo | $(COQBIN)coqtop -compat 8.4 2>&1))
+COQ_NOT_SUPPORTS_REQUIRE_8_4 = $(filter Error,$(shell echo | $(COQBIN)coqtop -require Coq.Compat.Coq84 2>&1))
 
 coq-version::
 	@ echo $(COQ_VERSION)
 
+EXTRA_ECHO =
+
+# the native compiler is broken on Windows, so we disable it in 8.5
 ifneq (,$(COQ_SUPPORTS_NO_NATIVE_COMPILER)) # 8.5
+EXTRA_ECHO += echo "-arg -no-native-compiler"; #
 coq-version::
 	@ echo "Supports -no-native-compiler: Yes"
 else
 coq-version::
 	@ echo "Supports -no-native-compiler: No"
 endif
+
+ifeq (,$(COQ_NOT_SUPPORTS_COMPAT_8_4)) # Supports -compat 8.4
+EXTRA_ECHO += echo "-arg '-compat 8.4'"; #
+coq-version::
+	@ echo "Supports -compat 8.4: Yes"
+else
+coq-version::
+	@ echo "Supports -compat 8.4: No"
+endif
+
+ifeq (,$(COQ_NOT_SUPPORTS_REQUIRE_8_4)) # Supports -compat 8.4
+EXTRA_ECHO += echo "-arg '-require Coq.Compat.Coq84'"; #
+coq-version::
+	@ echo "Supports -require Coq.Compat.Coq84: Yes"
+else
+coq-version::
+	@ echo "Supports -require Coq.Compat.Coq84: No"
+endif
+
+_CoqProject: $(_COQPROJECT_IN_NAME)
+	($(EXTRA_ECHO); cat "$<") > "$@"
 
 COQ_EXTENDED_VERSION = $(shell (echo | $(COQBIN)coqtop 2>/dev/null; $(COQBIN)coqc --version 2>/dev/null))
 COQ_EXTENDED_VERSION_OLD = $(shell cat $(COQ_VERSION_FILE) 2>/dev/null)
@@ -85,6 +105,7 @@ $(COMPATIBILITY_FILE): $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_4__Compat.
 COMPAT_IS_84 = $(shell cmp -s $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_4__Compat.v $(COMPATIBILITY_FILE); echo $$?)
 COMPAT_IS_85 = $(shell cmp -s $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_5__Compat.v $(COMPATIBILITY_FILE); echo $$?)
 COMPAT_IS_85beta1 = $(shell cmp -s $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_5beta1__Compat.v $(COMPATIBILITY_FILE); echo $$?)
+COMPAT_IS_trunk = $(shell cmp -s $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__trunk__Compat.v $(COMPATIBILITY_FILE); echo $$?)
 
 ifeq ($(COMPAT_IS_84),0)
 v8.4::
@@ -122,41 +143,80 @@ v8.5beta1::
 	cp $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_5beta1__Compat.v $(COMPATIBILITY_FILE)
 endif
 
-ifneq (,$(wildcard _CoqProject)) # _CoqProject exists
-_COQPROJECT_HAS_NO_NATIVE_COMPILER = $(filter -no-native-compiler,$(shell cat _CoqProject))
+ifeq ($(COMPAT_IS_trunk),0)
+vtrunk::
+	@ true
+else
+vtrunk::
+	@ echo "## "
+	@ echo "## Switching to compatibility for Coq trunk"
+	@ echo "## "
+	rm -f $(COMPATIBILITY_FILE)
+	cp $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__trunk__Compat.v $(COMPATIBILITY_FILE)
+endif
 
-UPDATE_NO_NATIVE_COMPILER =
+ifneq (,$(wildcard _CoqProject)) # _CoqProject exists
+_COQPROJECT_CONTENTS = $(shell cat _CoqProject)
+_COQPROJECT_HAS_NO_NATIVE_COMPILER = $(filter -no-native-compiler,$(_COQPROJECT_CONTENTS))
+_COQPROJECT_HAS_COMPAT_8_4 = $(filter -compat 8.4,$(_COQPROJECT_CONTENTS))
+_COQPROJECT_HAS_REQUIRE_8_4 = $(filter -require Coq.Compat.Coq84,$(_COQPROJECT_CONTENTS))
+
+UPDATE_COQPROJECT =
 ifneq (,$(COQ_SUPPORTS_NO_NATIVE_COMPILER)) # supports -no-native-compiler
 ifneq (,$(_COQPROJECT_HAS_NO_NATIVE_COMPILER)) # and has it
 # we're good
 else
-UPDATE_NO_NATIVE_COMPILER = yes
+UPDATE_COQPROJECT = yes
 endif
 else # doesn't support -no-native-compiler
 ifneq (,$(_COQPROJECT_HAS_NO_NATIVE_COMPILER)) # but uses it
-UPDATE_NO_NATIVE_COMPILER = yes
+UPDATE_COQPROJECT = yes
 else
 # we're good
 endif
 endif
 
-ifneq (,$(UPDATE_NO_NATIVE_COMPILER))
-v8.4::
-	@ echo "## "
-	@ echo "## Remaking _CoqProject for Coq v8.4"
-	@ echo "## "
-	rm -f _CoqProject
-	$(MAKE) --no-print-directory _CoqProject
+ifeq (,$(COQ_NOT_SUPPORTS_REQUIRE_8_4)) # supports -require Coq.Compat.Coq84
+ifneq (,$(_COQPROJECT_HAS_REQUIRE_8_4)) # and has it
+# we're good
+else
+UPDATE_COQPROJECT = yes
+endif
+else # doesn't support -require Coq.Compat.Coq84
+ifneq (,$(_COQPROJECT_HAS_REQUIRE_8_4)) # but uses it
+UPDATE_COQPROJECT = yes
+else
+# we're good
+endif
+endif
 
-v8.5::
+ifeq (,$(COQ_NOT_SUPPORTS_COMPAT_8_4)) # supports -compat 8.4
+ifneq (,$(_COQPROJECT_HAS_COMPAT_8_4)) # and has it
+# we're good
+else
+UPDATE_COQPROJECT = yes
+endif
+else # doesn't support -compat 8.4
+ifneq (,$(_COQPROJECT_HAS_COMPAT_8_4)) # but uses it
+UPDATE_COQPROJECT = yes
+else
+# we're good
+endif
+endif
+
+ifneq (,$(UPDATE_COQPROJECT))
+v8.4 v8.5 v8.5beta1 vtrunk::
 	@ echo "## "
-	@ echo "## Remaking _CoqProject for Coq v8.5"
+	@ echo "## Remaking _CoqProject for Coq $@"
 	@ echo "## "
 	rm -f _CoqProject
 	$(MAKE) --no-print-directory _CoqProject
 endif
 endif
 
+ifneq (,$(filter trunk,$(COQ_VERSION))) # trunk
+compatibility: vtrunk
+else
 ifneq (,$(filter 8.5beta1,$(COQ_VERSION))) # 8.5beta1
 compatibility: v8.5beta1
 else
@@ -171,6 +231,7 @@ compatibility:
 	@ echo 'error: unrecognized version of Coq $(COQ_VERSION)'
 	@ echo
 	@ false
+endif
 endif
 endif
 endif
