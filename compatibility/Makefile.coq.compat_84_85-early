@@ -118,7 +118,7 @@ define add_arg
 # $(2) - arg to pass to coq_makefile (will be wrapped in double and single quotes)
 
 ifneq (,$$(COQ_SUPPORTS_$(1)))
-EXTRA_ECHO += echo "-arg '$(2)'";
+EXTRA_ECHO += echo '-arg "$(2)"';
 coq-version::
 	@ echo "Supports $(2): Yes"
 else
@@ -130,7 +130,7 @@ ifneq (,$(wildcard _CoqProject)) # _CoqProject exists
 HAS_NAME := _COQPROJECT_HAS_$(1)
 SUPPORTS_NAME := COQ_SUPPORTS_$(1)
 
-$$(HAS_NAME) := $(findstring -arg '$(2)',$(_COQPROJECT_CONTENTS))
+$$(HAS_NAME) := $(findstring -arg "$(2)",$(_COQPROJECT_CONTENTS))
 
 ifneq (,$$($$(SUPPORTS_NAME))) # supports $(1)
 ifneq (,$$($$(HAS_NAME))) # and has it
