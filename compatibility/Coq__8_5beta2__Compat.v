@@ -11,7 +11,7 @@ Global Set Universal Lemma Under Conjunction.
 
 (** In 8.4, [admit] created a new axiom; in 8.5, it just shelves the goal. *)
 Axiom proof_admitted : False.
-Ltac admit := abstract case proof_admitted.
+Ltac admit := clear; abstract case proof_admitted.
 
 (** In 8.5, [refine] leaves over dependent subgoals. *)
 Tactic Notation "refine" uconstr(term) := refine term; shelve_unifiable.
@@ -29,6 +29,21 @@ Tactic Notation "constructor" int_or_var(n) := constructor_84_n n.
 Tactic Notation "constructor" "(" tactic(tac) ")" := constructor_84_tac tac.
 
 Global Set Regular Subst Tactic.
+
+(** Some names have changed in the standard library, so we add aliases. *)
+Require Coq.ZArith.Int.
+Module Export Coq.
+  Module Export ZArith.
+    Module Int.
+      Module Z_as_Int.
+        Include Coq.ZArith.Int.Z_as_Int.
+        Notation plus := Coq.ZArith.Int.Z_as_Int.add (only parsing).
+        Notation minus := Coq.ZArith.Int.Z_as_Int.sub (only parsing).
+        Notation mult := Coq.ZArith.Int.Z_as_Int.mul (only parsing).
+      End Z_as_Int.
+    End Int.
+  End ZArith.
+End Coq.
 
 (** Many things now import [PeanoNat] rather than [NPeano], so we require it so that the old absolute names in [NPeano.Nat] are available. *)
 Require Coq.Numbers.Natural.Peano.NPeano.
