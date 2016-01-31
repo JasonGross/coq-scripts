@@ -9,7 +9,7 @@ import os, sys, re
 # mapping names of compiled files to the number of minutes and seconds
 # that they took to compile.
 
-STRIP_REG = re.compile('^(coq/|contrib/|)(?:theories/)?')
+STRIP_REG = re.compile('^(coq/|contrib/|)(?:theories/|src/)?')
 STRIP_REP = r'\1'
 
 def get_times(file_name):
@@ -21,7 +21,7 @@ def get_times(file_name):
     '''
     with open(file_name, 'r') as f:
         lines = f.read()
-    reg = re.compile(r'^([^ ]*) \(user: ([0-9\.]+) mem: [0-9]+ [a-zA-Z]+\)$', re.MULTILINE)
+    reg = re.compile(r'^([^ ]*) \([^\)]*?user: ([0-9\.]+)[^\)]*?\)$', re.MULTILINE)
     times = reg.findall(lines)
     times_dict = {}
     if all(STRIP_REG.search(name) for name, time in times):
