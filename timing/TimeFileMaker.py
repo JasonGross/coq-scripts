@@ -24,8 +24,8 @@ def get_times(file_name):
     reg = re.compile(r'^([^ ]*) \([^\)]*?user: ([0-9\.]+)[^\)]*?\)$', re.MULTILINE)
     times = reg.findall(lines)
     times_dict = {}
-    if all(STRIP_REG.search(name) for name, time in times):
-        times = tuple((STRIP_REG.sub(STRIP_REP, name), time) for name, time in times)
+    if all(STRIP_REG.search(name.strip()) for name, time in times):
+        times = tuple((STRIP_REG.sub(STRIP_REP, name.strip()), time) for name, time in times)
     for name, time in times:
         seconds, milliseconds = time.split('.')
         seconds = int(seconds)
