@@ -15,4 +15,6 @@ Global Arguments Coq.Classes.RelationClasses.transitivity {A} {R} {_} [x] [y] [z
     https://coq.inria.fr/bugs/show_bug.cgi?id=3280 (comment 13) for
     more details. *)
 Ltac fast_set' x y := set (x := y).
+Ltac fast_set'_in x y H := set (x := y) in H.
 Tactic Notation "fast_set" "(" ident(x) ":=" constr(y) ")" := fast_set' x y.
+Tactic Notation "fast_set" "(" ident(x) ":=" constr(y) ")" "in" hyp(H) := fast_set'_in x y H.

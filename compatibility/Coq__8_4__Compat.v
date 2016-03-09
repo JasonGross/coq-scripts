@@ -14,4 +14,14 @@ Ltac fast_set' x y :=
                                let G' := context G[x] in
                                change G'
                           end ].
+Ltac fast_set'_in x y H :=
+  pose y as x;
+  first [ progress change y with x in H
+        | progress repeat match type of H with
+                          | appcontext G[?e]
+                            => constr_eq y e;
+                               let G' := context G[x] in
+                               change G' in H
+                          end ].
 Tactic Notation "fast_set" "(" ident(x) ":=" constr(y) ")" := fast_set' x y.
+Tactic Notation "fast_set" "(" ident(x) ":=" constr(y) ")" "in" hyp(H) := fast_set'_in x y H.
