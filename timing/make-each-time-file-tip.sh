@@ -73,7 +73,7 @@ git checkout "$PREV_COMMIT" || exit 1
 
 # we must `make clean` so we have a fresh slate, and time _all_ the
 # files
-$MAKE clean
+make clean
 # run the given `make` command, passing `TIMED=1` to get timing and
 # `-k` to continue even if files fail
 $MAKE TIMED=1 -k 2>&1 | tee "$OLD_FILE"
@@ -85,7 +85,7 @@ git checkout "$BRANCH_MOV" || exit 1
 trap "exit 1" SIGHUP SIGINT SIGTERM
 # we must `make clean` so we have a fresh slate, and time _all_ the
 # files
-$MAKE clean
+make clean
 # run the given `make` command, passing `TIMED=1` to get timing and
 # `-k` to continue even if files fail
 $MAKE TIMED=1 -k 2>&1 | tee "$NEW_FILE"
