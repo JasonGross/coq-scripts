@@ -33,7 +33,7 @@ trap "exit 1" SIGHUP SIGINT SIGTERM
 source "$DIR"/make-pretty-timed-defaults.sh "$@"
 
 # run make clean and make
-bash "$DIR"/make-each-time-file.sh "$MAKE" "$SINGLE_TIME_FILE" || exit 1
+bash "$DIR"/make-each-time-file.sh "$MAKECMD" "$SINGLE_TIME_FILE" || exit 1
 # aggregate the results
 python "$(relpath "$DIR"/make-one-time-file.py)" "$SINGLE_TIME_FILE" "$SINGLE_PRETTY_TIME_FILE" || exit 1
 # print out the results

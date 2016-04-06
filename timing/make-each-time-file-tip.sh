@@ -33,7 +33,7 @@ fi
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "$DIR/../pushd-root.sh"
 
-MAKE="$1"
+MAKECMD="$1"
 NEW_FILE="$2"
 OLD_FILE="$3"
 
@@ -76,7 +76,7 @@ git checkout "$PREV_COMMIT" || exit 1
 make clean
 # run the given `make` command, passing `TIMED=1` to get timing and
 # `-k` to continue even if files fail
-$MAKE TIMED=1 -k 2>&1 | tee "$OLD_FILE"
+$MAKECMD TIMED=1 -k 2>&1 | tee "$OLD_FILE"
 
 
 # there is a diff, so restore the changes
@@ -88,6 +88,6 @@ trap "exit 1" SIGHUP SIGINT SIGTERM
 make clean
 # run the given `make` command, passing `TIMED=1` to get timing and
 # `-k` to continue even if files fail
-$MAKE TIMED=1 -k 2>&1 | tee "$NEW_FILE"
+$MAKECMD TIMED=1 -k 2>&1 | tee "$NEW_FILE"
 
 popd 1>/dev/null

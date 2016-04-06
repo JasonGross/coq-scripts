@@ -20,4 +20,4 @@ EXTRA_ARGS=""
 if [ ! -z "$(make --help 2>&1 | grep -- --output-sync)" ]; then
     EXTRA_ARGS="--output-sync $EXTRA_ARGS"
 fi
-export MAKE="make $EXTRA_ARGS $@"
+export MAKECMD="make $EXTRA_ARGS $@"

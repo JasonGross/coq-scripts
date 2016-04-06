@@ -32,7 +32,7 @@ fi
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "$DIR/../pushd-root.sh"
 
-MAKE="$1"
+MAKECMD="$1"
 NEW_FILE="$2"
 OLD_FILE="$3"
 
@@ -50,7 +50,7 @@ if [ ! -z "$OLD_FILE" ]; then
     make clean
     # run the given `make` command, passing `TIMED=1` to get timing
     # and `-k` to continue even if files fail
-    $MAKE TIMED=1 -k 2>&1 | tee "$OLD_FILE"
+    $MAKECMD TIMED=1 -k 2>&1 | tee "$OLD_FILE"
 
 
     # make the current version
@@ -68,7 +68,7 @@ if [ ! -z "$OLD_FILE" ]; then
 	make clean
         # run the given `make` command, passing `TIMED=1` to get
         # timing and `-k` to continue even if files fail
-	$MAKE TIMED=1 -k 2>&1 | tee "$NEW_FILE"
+	$MAKECMD TIMED=1 -k 2>&1 | tee "$NEW_FILE"
     fi
 else
     # if we're only making one state of the library, we still must
@@ -76,7 +76,7 @@ else
     make clean
     # run the given `make` command, passing `TIMED=1` to get timing
     # and `-k` to continue even if files fail
-    $MAKE TIMED=1 -k 2>&1 | tee "$NEW_FILE"
+    $MAKECMD TIMED=1 -k 2>&1 | tee "$NEW_FILE"
 fi
 
 popd 1>/dev/null

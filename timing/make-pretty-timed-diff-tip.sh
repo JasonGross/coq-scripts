@@ -43,6 +43,6 @@ trap "exit 1" SIGHUP SIGINT SIGTERM
 source "$DIR"/make-pretty-timed-defaults.sh "$@"
 
 # run make clean and make, on both the old state and the new state
-bash "$DIR"/make-each-time-file-tip.sh "$MAKE" "$NEW_TIME_FILE" "$OLD_TIME_FILE" || exit 1
+bash "$DIR"/make-each-time-file-tip.sh "$MAKECMD" "$NEW_TIME_FILE" "$OLD_TIME_FILE" || exit 1
 # aggregate the results
 bash "$DIR"/make-combine-pretty-timed.sh "$@"
