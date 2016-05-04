@@ -18,6 +18,7 @@ Tactic Notation "fast_set" "(" ident(x) ":=" constr(y) ")" "in" hyp(H) := fast_s
 
 
 Require Coq.Lists.List.
+Require Coq.Vectors.VectorDef.
 Module Export Coq.
 Module Export Lists.
 Module List.
@@ -27,5 +28,14 @@ Notation " [ x ; .. ; y ] " := (cons x .. (cons y nil) ..) : list_scope.
 End ListNotations.
 End List.
 End Lists.
+Module Export Vectors.
+Module VectorDef.
+Module VectorNotations.
+Import Coq.Vectors.VectorDef.VectorNotations.
+Notation " [ x ; .. ; y ] " := (cons _ x _ .. (cons _ y _ (nil _)) ..) : vector_scope. (* actually only required in > 8.5pl1, not in >= 8.5pl1 *)
+End VectorNotations.
+End VectorDef.
+End Vectors.
 End Coq.
+Export Vectors.VectorDef.VectorNotations.
 Export List.ListNotations.
