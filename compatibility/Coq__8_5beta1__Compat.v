@@ -28,8 +28,6 @@ Tactic Notation "constructor" := constructor_84.
 Tactic Notation "constructor" int_or_var(n) := constructor_84_n n.
 Tactic Notation "constructor" "(" tactic(tac) ")" := constructor_84_tac tac.
 
-Global Set Regular Subst Tactic.
-
 (** Many things now import [PeanoNat] rather than [NPeano], so we require it so that the old absolute names in [NPeano.Nat] are available. *)
 Require Coq.Numbers.Natural.Peano.NPeano.
 
