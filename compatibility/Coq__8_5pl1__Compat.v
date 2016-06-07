@@ -25,7 +25,7 @@ Module Export Vectors.
 Module VectorDef.
 Module VectorNotations.
 Import Coq.Vectors.VectorDef.VectorNotations.
-Notation " [ x ; .. ; y ] " := (Vector.cons _ x _ .. (Vector.cons _ y _ (Vector.nil _)) ..) : vector_scope. (* actually only required in > 8.5pl1, not in >= 8.5pl1 *)
+Notation " [ x ; .. ; y ] " := (VectorDef.cons _ x _ .. (VectorDef.cons _ y _ (VectorDef.nil _)) ..) : vector_scope. (* actually only required in > 8.5pl1, not in >= 8.5pl1 *)
 End VectorNotations.
 End VectorDef.
 End Vectors.
