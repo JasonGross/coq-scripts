@@ -20,7 +20,7 @@ FORCE::
 	@ false
 endif
 
-VERSION_TARGETS := v8.4 v8.5 v8.5beta1 v8.5beta2 v8.5beta3 v8.5rc1 vtrunk
+VERSION_TARGETS := v8.4 v8.5pl1 v8.5 v8.5beta1 v8.5beta2 v8.5beta3 v8.5rc1 vtrunk
 
 .PHONY: compatibility $(VERSION_TARGETS) warn-compat-file
 
