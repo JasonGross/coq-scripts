@@ -24,10 +24,13 @@ define SET_ML_COMPATIBILITY
 
 ifeq ($(filter $(1), $(ML_COMPATIBILITY_FILES)),)
 FORCE::
-	@echo "ERROR: $(1) is missing from ML_COMPATIBILITY_FILES"
-	@echo "This causes creation of .ml*.d files to fail, as it"
-	@echo "happens too early."
-	$(Q)exit 1
+	@ echo
+	@ echo "\033[0;31mERROR: $(1) is missing from ML_COMPATIBILITY_FILES\033[0m"; \
+	echo "\033[0;31mThis causes creation of .ml*.d files to fail, as it\033[0m"; \
+	echo "\033[0;31mhappens too early.\033[0m"; \
+	echo "\033[0;31mThe value of ML_COMPATIBILITY_FILES is '$(ML_COMPATIBILITY_FILES)'\033[0m"
+	@ echo
+	@ false
 endif
 
 ifneq ($(call test_files_are_same,$(1),$(1)$(2)),0)
