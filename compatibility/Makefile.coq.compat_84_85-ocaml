@@ -27,6 +27,7 @@ FORCE::
 	@echo "ERROR: $(1) is missing from ML_COMPATIBILITY_FILES"
 	@echo "This causes creation of .ml*.d files to fail, as it"
 	@echo "happens too early."
+	$(Q)exit 1
 endif
 
 ifneq ($(call test_files_are_same,$(1),$(1)$(2)),0)
