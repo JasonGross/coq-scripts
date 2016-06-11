@@ -48,4 +48,5 @@ End VectorDef.
 End Vectors.
 End Coq.
 Export Vectors.VectorDef.VectorNotations.
+Close Scope vector_scope.
 Export List.ListNotations.
