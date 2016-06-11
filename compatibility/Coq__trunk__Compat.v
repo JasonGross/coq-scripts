@@ -15,7 +15,7 @@ Module Export Coq.
 Module Export Lists.
 Module List.
 Module ListNotations.
-Include Coq.Lists.List.ListNotations.
+Export Coq.Lists.List.ListNotations.
 Notation " [ x ; .. ; y ] " := (cons x .. (cons y nil) ..) : list_scope.
 End ListNotations.
 End List.
@@ -23,7 +23,7 @@ End Lists.
 Module Export Vectors.
 Module VectorDef.
 Module VectorNotations.
-Import Coq.Vectors.VectorDef.VectorNotations.
+Export Coq.Vectors.VectorDef.VectorNotations.
 Notation " [ x ; .. ; y ] " := (VectorDef.cons _ x _ .. (VectorDef.cons _ y _ (VectorDef.nil _)) ..) : vector_scope. (* actually only required in > 8.5pl1, not in >= 8.5pl1 *)
 End VectorNotations.
 End VectorDef.
