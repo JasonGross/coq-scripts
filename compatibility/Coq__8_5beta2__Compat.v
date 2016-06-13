@@ -85,4 +85,3 @@ End VectorNotations.
 End VectorDef.
 End Vectors.
 End Coq.
-Export Lists.List.ListNotations.
