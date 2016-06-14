@@ -19,13 +19,22 @@ Tactic Notation "fast_set" "(" ident(x) ":=" constr(y) ")" "in" hyp(H) := fast_s
 (** Add Coq 8.4+8.5 notations, so that we don't accidentally make use of Coq 8.4-only notations *)
 Require Coq.Lists.List.
 Require Coq.Vectors.VectorDef.
+Module Export LocalListNotations.
+Notation " [ ] " := nil (format "[ ]") : list_scope.
+Notation " [ x ; .. ; y ] " := (cons x .. (cons y nil) ..) : list_scope.
+Notation " [ x ; y ; .. ; z ] " := (cons x (cons y .. (cons z nil) ..)) : list_scope.
+End.
+Module Export LocalVectorNotations.
+Notation " [ ] " := (Vector.nil _) (format "[ ]") : vector_scope.
+Notation " [ x ; .. ; y ] " := (VectorDef.cons _ x _ .. (VectorDef.cons _ y _ (VectorDef.nil _)) ..) : vector_scope.
+Notation " [ x ; y ; .. ; z ] " := (VectorDef.cons _ x _ (VectorDef.cons _ y _ .. (VectorDef.cons _ z _ (VectorDef.nil _)) ..)) : vector_scope.
+End LocalVectorNotations.
 Module Export Coq.
 Module Export Lists.
 Module List.
 Module ListNotations.
 Export Coq.Lists.List.ListNotations.
-Notation " [ x ; .. ; y ] " := (cons x .. (cons y nil) ..) : list_scope.
-Notation " [ x ; y ; .. ; z ] " := (cons x (cons y .. (cons z nil) ..)) : list_scope.
+Export LocalListNotations.
 End ListNotations.
 End List.
 End Lists.
@@ -33,8 +42,7 @@ Module Export Vectors.
 Module VectorDef.
 Module VectorNotations.
 Export Coq.Vectors.VectorDef.VectorNotations.
-Notation " [ x ; .. ; y ] " := (VectorDef.cons _ x _ .. (VectorDef.cons _ y _ (VectorDef.nil _)) ..) : vector_scope. (* actually only required in > 8.5pl1, not in >= 8.5pl1 *)
-Notation " [ x ; y ; .. ; z ] " := (VectorDef.cons _ x _ (VectorDef.cons _ y _ .. (VectorDef.cons _ z _ (VectorDef.nil _)) ..)) : vector_scope.
+Export LocalVectorNotations.
 End VectorNotations.
 End VectorDef.
 End Vectors.
