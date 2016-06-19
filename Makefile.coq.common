@@ -109,6 +109,8 @@ clean::
 	$(Q)find . -name .coq-native -type d -empty -delete
 	$(VECHO) "RM *.O *.NATIVE"
 	$(Q)rm -f $(OBJFILES) $(OBJFILES:.o=.native) $(NATIVEFILES)
+	$(VECHO) "RM *.timing"
+	$(Q)rm -f $(VFILES:.v=.timing)
 	- rm -rf html mlihtml uninstall_me.sh
 	rm -f Makefile.coq
 
@@ -119,6 +121,9 @@ vo_to_installv = $(addsuffix .v,$(basename $(call vo_closure,$(filter %.vo,$1)))
 SORT_COQPROJECT = sed 's,[^/]*/,~&,g' | env LC_COLLATE=C sort | sed 's,~,,g'
 
 $(VOFILES): | FORCE
+
+$(VFILES:.v=.timing): %.timing: %.vo
+	$(COQC) -time $(COQDEBUG) $(COQFLAGS) $* > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
 
 MISSING_COQPROJECT_VFILES = $(addsuffix .v,$(basename $(filter-out $(VOFILES),$(call vo_closure,$(VOFILES)))))
 ifneq (,$(MISSING_COQPROJECT_VFILES))
