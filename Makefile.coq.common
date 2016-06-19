@@ -109,8 +109,8 @@ clean::
 	$(Q)find . -name .coq-native -type d -empty -delete
 	$(VECHO) "RM *.O *.NATIVE"
 	$(Q)rm -f $(OBJFILES) $(OBJFILES:.o=.native) $(NATIVEFILES)
-	$(VECHO) "RM *.timing"
-	$(Q)rm -f $(VFILES:.v=.timing)
+	$(VECHO) "RM *.TIMING *.TIMINGS"
+	$(Q)rm -f $(VFILES:.v=.timing) $(VFILES:.v=.timings)
 	- rm -rf html mlihtml uninstall_me.sh
 	rm -f Makefile.coq
 
@@ -124,6 +124,9 @@ $(VOFILES): | FORCE
 
 $(VFILES:.v=.timing): %.timing: %.vo
 	$(COQC) -time $(COQDEBUG) $(COQFLAGS) $* > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
+
+$(VFILES:.v=.timings): %.timings: %.vo
+	$(COQC) -verbose $(COQDEBUG) $(COQFLAGS) $* | "$(Makefile_coq_common_mkfile_dir)/timing/insert-timings.sh" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
 
 MISSING_COQPROJECT_VFILES = $(addsuffix .v,$(basename $(filter-out $(VOFILES),$(call vo_closure,$(VOFILES)))))
 ifneq (,$(MISSING_COQPROJECT_VFILES))
