@@ -37,8 +37,8 @@ ifneq ($(call test_files_are_same,$(1),$(1)$(2)),0)
 $(1): update-ml-files
 
 update-ml-files::
-	$(VECHO) "CP $(1)$(2)"
-	$(Q)cp -f "$(1)$(2)" "$(1)"
-	$(Q)touch "$(1)"
+	$(SHOW)'CP $(1)$(2)'
+	$(HIDE)cp -f "$(1)$(2)" "$(1)"
+	$(HIDE)touch "$(1)"
 endif
 endef

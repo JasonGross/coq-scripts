@@ -8,39 +8,60 @@ Makefile_coq_common_mkfile_abspath := $(abspath $(Makefile_coq_common_mkfile_pat
 Makefile_coq_common_mkfile_dir := $(patsubst %/,%,$(dir $(Makefile_coq_common_mkfile_path)))
 Makefile_coq_common_mkfile_absdir := $(patsubst %/,%,$(dir $(Makefile_coq_common_mkfile_abspath)))
 
-V = 0
+VERBOSE?=
+SHOW := $(if $(VERBOSE),@true "",@echo "")
+HIDE := $(if $(VERBOSE),,@)
 
-SILENCE_COQC_0 = @echo "COQC $<"; #
+ifneq ($(SHOULD_SILENCE),)
+
+SILENCE_COQC_ = @echo 'COQC $<'; #
 SILENCE_COQC_1 =
-SILENCE_COQC = $(SILENCE_COQC_$(V))
+SILENCE_COQC = $(SILENCE_COQC_$(VERBOSE))
 
-SILENCE_COQDEP_0 = @echo "COQDEP $<"; #
+SILENCE_COQDEP_ = @echo 'COQDEP $<'; #
 SILENCE_COQDEP_1 =
-SILENCE_COQDEP = $(SILENCE_COQDEP_$(V))
+SILENCE_COQDEP = $(SILENCE_COQDEP_$(VERBOSE))
 
 ifeq ($(STRICT_COQDEP),1)
-  SILENCE_COQDEP += "$(Makefile_coq_common_mkfile_dir)/strictify-coqdep.py" #
+  SILENCE_COQDEP += '$(Makefile_coq_common_mkfile_dir)/strictify-coqdep.py' #
 endif
 
-SILENCE_OCAMLC_0 = @echo "OCAMLC $<"; #
+SILENCE_OCAMLC_ = @echo 'OCAMLC $<'; #
 SILENCE_OCAMLC_1 =
-SILENCE_OCAMLC = $(SILENCE_OCAMLC_$(V))
+SILENCE_OCAMLC = $(SILENCE_OCAMLC_$(VERBOSE))
 
-SILENCE_OCAMLDEP_0 = @echo "OCAMLDEP $<"; #
+SILENCE_OCAMLDEP_ = @echo 'OCAMLDEP $<'; #
 SILENCE_OCAMLDEP_1 =
-SILENCE_OCAMLDEP = $(SILENCE_OCAMLDEP_$(V))
+SILENCE_OCAMLDEP = $(SILENCE_OCAMLDEP_$(VERBOSE))
 
-SILENCE_OCAMLOPT_0 = @echo "OCAMLOPT $<"; #
+SILENCE_OCAMLOPT_ = @echo 'OCAMLOPT $<'; #
 SILENCE_OCAMLOPT_1 =
-SILENCE_OCAMLOPT = $(SILENCE_OCAMLOPT_$(V))
+SILENCE_OCAMLOPT = $(SILENCE_OCAMLOPT_$(VERBOSE))
 
-Q_0 := @
+SILENCED_COQC = $(COQC)
+
+else
+
+SILENCE_COQC?=
+SILENCE_COQDEP?=
+SILENCE_OCAMLC?=
+SILENCE_OCAMLDEP?=
+SILENCE_OCAMLOPT?=
+
+ifeq ($(STRICT_COQDEP),1)
+  SILENCE_COQDEP += '$(Makefile_coq_common_mkfile_dir)/strictify-coqdep.py' #
+endif
+
+SILENCED_COQC = $(SHOW)'COQC $*'; $(COQC)
+endif
+
+Q_ := @
 Q_1 :=
-Q = $(Q_$(V))
+Q = $(Q_$(VERBOSE))
 
-VECHO_0 := @echo
+VECHO_ := @echo
 VECHO_1 := @true
-VECHO = $(VECHO_$(V))
+VECHO = $(VECHO_$(VERBOSE))
 
 TIMED=
 TIMECMD=
@@ -60,8 +81,8 @@ SUPER_FAST_TARGETS += $(UPDATE_COQPROJECT_TARGET) Makefile.coq
 # Quoting CAMLP4BIN on Windows results in "The input line is too long." (https://coq.inria.fr/bugs/show_bug.cgi?id=4266)
 # so we unquote it with sed
 Makefile.coq: Makefile _CoqProject
-	$(VECHO) "COQ_MAKEFILE -f _CoqProject > $@"
-	$(Q)$(COQBIN)coq_makefile COQC = "\$$(SILENCE_COQC)\$$(TIMER) \"\$$(COQBIN)coqc\"" COQDEP = "\$$(SILENCE_COQDEP)\"\$$(COQBIN)coqdep\" -c" -f _CoqProject | sed s'|^\(-include.*\)$$|ifneq ($$(filter-out $(FAST_TARGETS),$$(MAKECMDGOALS)),)~\1~else~ifeq ($$(MAKECMDGOALS),)~\1~endif~endif|g' | tr '~' '\n' | sed s'/^clean:$$/clean-old::/g' | sed s'/^clean::$$/clean-old::/g' | sed s'/^Makefile: /Makefile-old: /g' | sed s'/"$$(CAMLP4BIN)$$(CAMLP4)o"/$$(CAMLP4BIN)$$(CAMLP4)o/g' > $@
+	$(SHOW)'COQ_MAKEFILE -f _CoqProject > $@'
+	$(HIDE)$(COQBIN)coq_makefile COQC = "\$$(SILENCE_COQC)\$$(TIMER) \"\$$(COQBIN)coqc\"" COQDEP = "\$$(SILENCE_COQDEP)\"\$$(COQBIN)coqdep\" -c" -f _CoqProject | sed s'|^\(-include.*\)$$|ifneq ($$(filter-out $(FAST_TARGETS),$$(MAKECMDGOALS)),)~\1~else~ifeq ($$(MAKECMDGOALS),)~\1~endif~endif|g' | tr '~' '\n' | sed s'/^clean:$$/clean-old::/g' | sed s'/^clean::$$/clean-old::/g' | sed s'/^Makefile: /Makefile-old: /g' | sed s'/"$$(CAMLP4BIN)$$(CAMLP4)o"/$$(CAMLP4BIN)$$(CAMLP4)o/g' > $@
 
 ifneq ($(filter-out $(SUPER_FAST_TARGETS),$(MAKECMDGOALS)),)
 -include Makefile.coq
@@ -95,22 +116,22 @@ OCAMLOPT_OLD := $(OCAMLOPT)
 OCAMLOPT = $(SILENCE_OCAMLOPT)$(OCAMLOPT_OLD)
 
 clean::
-	$(VECHO) "RM *.CMO *.CMI *.CMA"
-	$(Q)rm -f $(ALLCMOFILES) $(CMIFILES) $(CMAFILES)
-	$(VECHO) "RM *.CMX *.CMXS *.CMXA *.O *.A"
-	$(Q)rm -f $(ALLCMOFILES:.cmo=.cmx) $(CMXAFILES) $(CMXSFILES) $(ALLCMOFILES:.cmo=.o) $(CMXAFILES:.cmxa=.a)
-	$(VECHO) "RM *.ML.D *.MLI.D *.ML4.D *.MLLIB.D"
-	$(Q)rm -f $(addsuffix .d,$(MLFILES) $(MLIFILES) $(ML4FILES) $(MLLIBFILES) $(MLPACKFILES))
-	$(VECHO) "RM *.VO *.VI *.VIO *.G *.V.D *.V.BEAUTIFIED *.V.OLD"
-	$(Q)rm -f $(VOFILES) $(VIFILES) $(VOFILES:.vo=.vio) $(GFILES) $(VFILES:.v=.v.d) $(VFILES:=.beautified) $(VFILES:=.old)
-	$(VECHO) "RM *.PS *.PDF *.GLOB *.TEX *.G.TEX"
-	$(Q)rm -f all.ps all-gal.ps all.pdf all-gal.pdf all.glob $(VFILES:.v=.glob) $(VFILES:.v=.tex) $(VFILES:.v=.g.tex) all-mli.tex
-	$(VECHO) "FIND .coq-native -DELETE"
-	$(Q)find . -name .coq-native -type d -empty -delete
-	$(VECHO) "RM *.O *.NATIVE"
-	$(Q)rm -f $(OBJFILES) $(OBJFILES:.o=.native) $(NATIVEFILES)
-	$(VECHO) "RM *.TIMING *.TIMINGS"
-	$(Q)rm -f $(VFILES:.v=.timing) $(VFILES:.v=.timings)
+	$(SHOW)"RM *.CMO *.CMI *.CMA"
+	$(HIDE)rm -f $(ALLCMOFILES) $(CMIFILES) $(CMAFILES)
+	$(SHOW)"RM *.CMX *.CMXS *.CMXA *.O *.A"
+	$(HIDE)rm -f $(ALLCMOFILES:.cmo=.cmx) $(CMXAFILES) $(CMXSFILES) $(ALLCMOFILES:.cmo=.o) $(CMXAFILES:.cmxa=.a)
+	$(SHOW)"RM *.ML.D *.MLI.D *.ML4.D *.MLLIB.D"
+	$(HIDE)rm -f $(addsuffix .d,$(MLFILES) $(MLIFILES) $(ML4FILES) $(MLLIBFILES) $(MLPACKFILES))
+	$(SHOW)"RM *.VO *.VI *.VIO *.G *.V.D *.V.BEAUTIFIED *.V.OLD"
+	$(HIDE)rm -f $(VOFILES) $(VIFILES) $(VOFILES:.vo=.vio) $(GFILES) $(VFILES:.v=.v.d) $(VFILES:=.beautified) $(VFILES:=.old)
+	$(SHOW)"RM *.PS *.PDF *.GLOB *.TEX *.G.TEX"
+	$(HIDE)rm -f all.ps all-gal.ps all.pdf all-gal.pdf all.glob $(VFILES:.v=.glob) $(VFILES:.v=.tex) $(VFILES:.v=.g.tex) all-mli.tex
+	$(SHOW)"FIND .coq-native -DELETE"
+	$(HIDE)find . -name .coq-native -type d -empty -delete
+	$(SHOW)"RM *.O *.NATIVE"
+	$(HIDE)rm -f $(OBJFILES) $(OBJFILES:.o=.native) $(NATIVEFILES)
+	$(SHOW)"RM *.TIMING *.TIMINGS"
+	$(HIDE)rm -f $(VFILES:.v=.timing) $(VFILES:.v=.timings)
 	- rm -rf html mlihtml uninstall_me.sh
 	rm -f Makefile.coq
 
@@ -123,10 +144,10 @@ SORT_COQPROJECT = sed 's,[^/]*/,~&,g' | env LC_COLLATE=C sort | sed 's,~,,g'
 $(VOFILES): | FORCE
 
 $(VFILES:.v=.timing): %.timing: %.vo
-	$(COQC) -time $(COQDEBUG) $(COQFLAGS) $* > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
+	$(SILENCED_COQC) -time $(COQDEBUG) $(COQFLAGS) $* > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
 
 $(VFILES:.v=.timings): %.timings: %.vo
-	$(COQC) -verbose $(COQDEBUG) $(COQFLAGS) $* | "$(Makefile_coq_common_mkfile_dir)/timing/insert-timings.sh" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
+	$(SILENCED_COQC) -verbose $(COQDEBUG) $(COQFLAGS) $* | "$(Makefile_coq_common_mkfile_dir)/timing/insert-timings.sh" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
 
 MISSING_COQPROJECT_VFILES = $(addsuffix .v,$(basename $(filter-out $(VOFILES),$(call vo_closure,$(VOFILES)))))
 ifneq (,$(MISSING_COQPROJECT_VFILES))
@@ -154,8 +175,8 @@ clean-unmade::
 
 ifneq (,$(filter clean-unmade,$(MAKECMDGOALS)))
 check-clean-unmade: | $(VOFILES:.vo=.v.d)
-	$(VECHO) "MAKE clean-unmade"
-	$(Q)make -f "$(Makefile_coq_common_mkfile_dir)/Makefile.clean_unmade" clean-unmade VOFILES="$(VOFILES)" RECURSIVE_TARGETS_WITHOUT_CLEAN_UNMADE="$$($(MAKE) --dry-run --debug=v error-if-clean-unmade $(filter-out clean-unmade,$(MAKECMDGOALS)) 2>&1 | grep -o "target '[^']*\|target file '[^']*" | sed s"/target '//g" | sed s"/target file '//g" | tr '\n' ' ')"
+	$(SHOW)"MAKE clean-unmade"
+	$(HIDE)make -f "$(Makefile_coq_common_mkfile_dir)/Makefile.clean_unmade" clean-unmade VOFILES="$(VOFILES)" RECURSIVE_TARGETS_WITHOUT_CLEAN_UNMADE="$$($(MAKE) --dry-run --debug=v error-if-clean-unmade $(filter-out clean-unmade,$(MAKECMDGOALS)) 2>&1 | grep -o "target '[^']*\|target file '[^']*" | sed s"/target '//g" | sed s"/target file '//g" | tr '\n' ' ')"
 else
 check-clean-unmade: | $(VOFILES:.vo=.v.d)
 
