@@ -103,6 +103,7 @@ endef
 
 $(eval $(call make_compat_version,v8.4,8_4,v8.4))
 $(eval $(call make_compat_version,v8.5,8_5,v8.5))
+$(eval $(call make_compat_version,v8.6,8_6,v8.6))
 $(eval $(call make_compat_version,v8.5beta1,8_5beta1,v8.5beta1))
 $(eval $(call make_compat_version,v8.5beta2,8_5beta2,v8.5beta2))
 $(eval $(call make_compat_version,v8.5beta3,8_5beta3,v8.5beta3))
@@ -195,6 +196,9 @@ else
 ifneq (,$(filter 8.5beta1,$(COQ_VERSION))) # 8.5beta1
 compatibility: v8.5beta1
 else
+ifneq (,$(filter 8.6%,$(COQ_VERSION))) # 8.6?
+compatibility: v8.6
+else
 ifneq (,$(filter 8.5%,$(COQ_VERSION))) # 8.5?
 compatibility: v8.5pl1
 else
@@ -206,6 +210,7 @@ compatibility:
 	@ echo 'error: unrecognized version of Coq $(COQ_VERSION)'
 	@ echo
 	@ false
+endif
 endif
 endif
 endif
