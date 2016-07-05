@@ -19,6 +19,7 @@ Tactic Notation "fast_set" "(" ident(x) ":=" constr(y) ")" "in" hyp(H) := fast_s
 (** Add Coq 8.4+8.5 notations, so that we don't accidentally make use of Coq 8.4-only notations *)
 Require Coq.Lists.List.
 Require Coq.Vectors.VectorDef.
+Require Coq.Numbers.Natural.Peano.NPeano.
 Module Export LocalListNotations.
 Notation " [ ] " := nil (format "[ ]") : list_scope.
 Notation " [ x ; .. ; y ] " := (cons x .. (cons y nil) ..) : list_scope.
@@ -46,4 +47,14 @@ Export LocalVectorNotations.
 End VectorNotations.
 End VectorDef.
 End Vectors.
+Module Export Numbers.
+Module Export Natural.
+Module Export Peano.
+Module NPeano.
+Export Coq.Numbers.Natural.Peano.NPeano.
+Notation modulo := Nat.modulo.
+End NPeano.
+End Peano.
+End Natural.
+End Numbers.
 End Coq.

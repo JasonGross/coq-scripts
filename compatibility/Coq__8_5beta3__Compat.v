@@ -49,4 +49,14 @@ Export LocalVectorNotations.
 End VectorNotations.
 End VectorDef.
 End Vectors.
+Module Export Numbers.
+Module Export Natural.
+Module Export Peano.
+Module NPeano.
+Export Coq.Numbers.Natural.Peano.NPeano.
+Notation modulo := Nat.modulo.
+End NPeano.
+End Peano.
+End Natural.
+End Numbers.
 End Coq.
