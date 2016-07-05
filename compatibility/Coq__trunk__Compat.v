@@ -9,6 +9,7 @@ Ltac fast_set'_in x y H := set (x := y) in H.
 Tactic Notation "fast_set" "(" ident(x) ":=" constr(y) ")" := fast_set' x y.
 Tactic Notation "fast_set" "(" ident(x) ":=" constr(y) ")" "in" hyp(H) := fast_set'_in x y H.
 
+(** Add Coq 8.4+8.5 notations, so that we don't accidentally make use of Coq 8.4-only notations *)
 Require Coq.Lists.List.
 Require Coq.Vectors.VectorDef.
 Module Export LocalListNotations.
@@ -21,21 +22,3 @@ Notation " [ ] " := (VectorDef.nil _) (format "[ ]") : vector_scope.
 Notation " [ x ; .. ; y ] " := (VectorDef.cons _ x _ .. (VectorDef.cons _ y _ (VectorDef.nil _)) ..) : vector_scope.
 Notation " [ x ; y ; .. ; z ] " := (VectorDef.cons _ x _ (VectorDef.cons _ y _ .. (VectorDef.cons _ z _ (VectorDef.nil _)) ..)) : vector_scope.
 End LocalVectorNotations.
-Module Export Coq.
-Module Export Lists.
-Module List.
-Module ListNotations.
-Export Coq.Lists.List.ListNotations.
-Export LocalListNotations.
-End ListNotations.
-End List.
-End Lists.
-Module Export Vectors.
-Module VectorDef.
-Module VectorNotations.
-Export Coq.Vectors.VectorDef.VectorNotations.
-Export LocalVectorNotations.
-End VectorNotations.
-End VectorDef.
-End Vectors.
-End Coq.

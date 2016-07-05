@@ -39,21 +39,3 @@ Notation " [ ] " := (VectorDef.nil _) (format "[ ]") : vector_scope.
 Notation " [ x ; .. ; y ] " := (VectorDef.cons _ x _ .. (VectorDef.cons _ y _ (VectorDef.nil _)) ..) : vector_scope.
 Notation " [ x ; y ; .. ; z ] " := (VectorDef.cons _ x _ (VectorDef.cons _ y _ .. (VectorDef.cons _ z _ (VectorDef.nil _)) ..)) : vector_scope.
 End LocalVectorNotations.
-Module Export Coq.
-Module Export Lists.
-Module List.
-Module ListNotations.
-Export Coq.Lists.List.ListNotations.
-Export LocalListNotations.
-End ListNotations.
-End List.
-End Lists.
-Module Export Vectors.
-Module VectorDef.
-Module VectorNotations.
-Export Coq.Vectors.VectorDef.VectorNotations.
-Export LocalVectorNotations.
-End VectorNotations.
-End VectorDef.
-End Vectors.
-End Coq.
