@@ -9,6 +9,7 @@ Ltac fast_set'_in x y H := set (x := y) in H.
 Tactic Notation "fast_set" "(" ident(x) ":=" constr(y) ")" := fast_set' x y.
 Tactic Notation "fast_set" "(" ident(x) ":=" constr(y) ")" "in" hyp(H) := fast_set'_in x y H.
 
+(** Add Coq 8.4+8.5 notations, so that we don't accidentally make use of Coq 8.4-only notations *)
 Require Coq.Lists.List.
 Require Coq.Vectors.VectorDef.
 Module Export LocalListNotations.
@@ -21,3 +22,20 @@ Notation " [ ] " := (VectorDef.nil _) (format "[ ]") : vector_scope.
 Notation " [ x ; .. ; y ] " := (VectorDef.cons _ x _ .. (VectorDef.cons _ y _ (VectorDef.nil _)) ..) : vector_scope.
 Notation " [ x ; y ; .. ; z ] " := (VectorDef.cons _ x _ (VectorDef.cons _ y _ .. (VectorDef.cons _ z _ (VectorDef.nil _)) ..)) : vector_scope.
 End LocalVectorNotations.
+
+Require Coq.FSets.FMapFacts.
+Module Export Coq.
+
+Module Export FSets.
+Module FMapFacts.
+Import Coq.FSets.FMapFacts.
+Module WFacts_fun (E:DecidableType)(Import M:WSfun E).
+  Notation option_map := option_map (compat "8.4").
+  Module Coq_FSets_FMapFacts_WFacts_fun := Coq.FSets.FMapFacts.WFacts_fun E M.
+  Include Coq_FSets_FMapFacts_WFacts_fun.
+End WFacts_fun.
+Module WFacts (M:WS) := WFacts_fun M.E M.
+Module Facts := WFacts.
+End FMapFacts.
+End FSets.
+End Coq.
