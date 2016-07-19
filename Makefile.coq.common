@@ -84,26 +84,28 @@ Makefile.coq: Makefile _CoqProject
 	$(SHOW)'COQ_MAKEFILE -f _CoqProject > $@'
 	$(HIDE)$(COQBIN)coq_makefile COQC = "\$$(SILENCE_COQC)\$$(TIMER) \"\$$(COQBIN)coqc\"" COQDEP = "\$$(SILENCE_COQDEP)\"\$$(COQBIN)coqdep\" -c" -f _CoqProject | sed s'|^\(-include.*\)$$|ifneq ($$(filter-out $(FAST_TARGETS),$$(MAKECMDGOALS)),)~\1~else~ifeq ($$(MAKECMDGOALS),)~\1~endif~endif|g' | tr '~' '\n' | sed s'/^clean:$$/clean-old::/g' | sed s'/^clean::$$/clean-old::/g' | sed s'/^Makefile: /Makefile-old: /g' | sed s'/"$$(CAMLP4BIN)$$(CAMLP4)o"/$$(CAMLP4BIN)$$(CAMLP4)o/g' > $@
 
-ifneq ($(filter-out $(SUPER_FAST_TARGETS),$(MAKECMDGOALS)),)
--include Makefile.coq
-else
+IS_FAST := 1
+IS_SUPER_FAST := 1
+
 ifeq ($(MAKECMDGOALS),)
--include Makefile.coq
+IS_FAST := 0
+IS_SUPER_FAST := 0
 endif
+
+ifneq ($(filter-out $(SUPER_FAST_TARGETS) $(FAST_TARGETS),$(MAKECMDGOALS)),)
+IS_FAST := 0
+endif
+
+ifneq ($(filter-out $(SUPER_FAST_TARGETS),$(MAKECMDGOALS)),)
+IS_SUPER_FAST := 0
+endif
+
+ifneq ($(IS_SUPER_FAST),1)
+-include Makefile.coq
 endif
 
 # 0 if same, 1 if different
 test_files_are_same = $(shell cmp -s $(1) $(2); echo $$?)
-
-IS_FAST := 1
-
-ifneq ($(filter-out $(SUPER_FAST_TARGETS) $(FAST_TARGETS),$(MAKECMDGOALS)),)
-IS_FAST := 0
-else
-ifeq ($(MAKECMDGOALS),)
-IS_FAST := 0
-endif
-endif
 
 # overwrite OCAMLC, OCAMLOPT, OCAMLDEP to make `make` quieter
 OCAMLC_OLD := $(OCAMLC)
@@ -149,6 +151,7 @@ $(VFILES:.v=.timing): %.timing: %.vo
 $(VFILES:.v=.timings): %.timings: %.vo
 	$(SILENCED_COQC) -verbose $(COQDEBUG) $(COQFLAGS) $* | "$(Makefile_coq_common_mkfile_dir)/timing/insert-timings.sh" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
 
+ifneq ($(IS_FAST),1)
 MISSING_COQPROJECT_VFILES = $(addsuffix .v,$(basename $(filter-out $(VOFILES),$(call vo_closure,$(VOFILES)))))
 ifneq (,$(MISSING_COQPROJECT_VFILES))
 FORCE::
@@ -167,6 +170,7 @@ FORCE::
 	@ echo 'error: Please run `$(MAKE) $(UPDATE_COQPROJECT_TARGET)`.'
 	@ echo
 	@ false
+endif
 endif
 
 $(VOFILES): | check-clean-unmade
