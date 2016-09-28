@@ -3,6 +3,7 @@ _COQPROJECT_IN_NAME?=_CoqProject.in
 _COQPROJECT_NAME?=_CoqProject.in
 COQ_VERSION_FILE=.coq-version
 DONT_USE_ADMIT_AXIOM?=
+PROFILE?=
 
 # http://stackoverflow.com/a/18137056/377022
 Makefile_coq_compat_84_85_mkfile_path := $(lastword $(MAKEFILE_LIST))
@@ -45,6 +46,7 @@ COQ_HELP := $(shell $(COQBIN)coqc -help 2>&1)
 negate_empty = $(if $(1),,yes)
 
 COQ_SUPPORTS_NO_NATIVE_COMPILER := $(findstring -no-native-compiler,$(COQ_HELP))
+COQ_SUPPORTS_PROFILE_LTAC := $(findstring -profile-ltac,$(COQ_HELP))
 COQ_SUPPORTS_COMPAT_8_4 := $(call negate_empty,$(findstring Error: Unknown compatibility version,$(shell echo | $(COQBIN)coqtop -compat 8.4 2>&1)))
 COQ_SUPPORTS_REQUIRE_8_4 := $(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -require Coq.Compat.Coq84 2>&1)))
 ifeq (,$(DONT_USE_ADMIT_AXIOM))
@@ -219,4 +221,18 @@ endif
 endif
 endif
 endif
+endif
+
+PROFILE_LTAC_FLAGS?=
+
+ifneq (,$(COQ_SUPPORTS_PROFILE_LTAC))
+coq-version::
+	@ echo "Supports -profile-ltac: Yes"
+
+ifeq (1,$(PROFILE))
+PROFILE_LTAC_FLAGS := -profile-ltac
+endif
+else
+coq-version::
+	@ echo "Supports -profile-ltac: No"
 endif
