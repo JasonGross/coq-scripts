@@ -113,6 +113,7 @@ $(eval $(call make_compat_version,v8.5beta2,8_5beta2,v8.5beta2))
 $(eval $(call make_compat_version,v8.5beta3,8_5beta3,v8.5beta3))
 $(eval $(call make_compat_version,v8.5rc1,8_5rc1,v8.5rc1))
 $(eval $(call make_compat_version,v8.5pl1,8_5pl1,v8.5pl1))
+$(eval $(call make_compat_version,v8.5pl2,8_5pl2,v8.5pl2))
 $(eval $(call make_compat_version,trunk,trunk,vtrunk))
 
 EXTRA_ECHO :=
