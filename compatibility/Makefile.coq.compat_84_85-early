@@ -124,6 +124,9 @@ endif
 ARG_SINGLE_QUOTE:='"'"'
 ARG_DOUBLE_QUOTE:="
 
+strip_single_quotes = $(subst ',,$(1))
+
+
 define add_arg_no_version_echo
 # $(1) - support suffix; $(COQ_SUPPORTS_$(1)) should be nonempty if there is support, empty if there is no support
 # $(2) - arg to pass to coq_makefile (will be wrapped in double and single quotes)
@@ -138,7 +141,7 @@ ifneq (,$(wildcard _CoqProject)) # _CoqProject exists
 HAS_NAME := _COQPROJECT_HAS_$(1)
 SUPPORTS_NAME := COQ_SUPPORTS_$(1)
 
-$$(HAS_NAME) := $(findstring $(ECHOED2),$(_COQPROJECT_CONTENTS))
+$$(HAS_NAME) := $$(findstring $$(call strip_single_quotes,$$(ECHOED2)),$(call strip_single_quotes,$(_COQPROJECT_CONTENTS)))
 
 ifneq (,$$($$(SUPPORTS_NAME))) # supports $(1)
 ifneq (,$$($$(HAS_NAME))) # and has it
