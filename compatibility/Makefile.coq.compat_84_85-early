@@ -4,6 +4,7 @@ _COQPROJECT_NAME?=_CoqProject.in
 COQ_VERSION_FILE=.coq-version
 DONT_USE_ADMIT_AXIOM?=
 PROFILE?=
+WARNINGS_STRING?="-deprecated-appcontext -notation-overridden"
 
 # http://stackoverflow.com/a/18137056/377022
 Makefile_coq_compat_84_85_mkfile_path := $(lastword $(MAKEFILE_LIST))
@@ -46,6 +47,7 @@ COQ_HELP := $(shell $(COQBIN)coqc -help 2>&1)
 negate_empty = $(if $(1),,yes)
 
 COQ_SUPPORTS_NO_NATIVE_COMPILER := $(findstring -no-native-compiler,$(COQ_HELP))
+COQ_SUPPORTS_WARNINGS := $(findstring configure display of warnings,$(COQ_HELP))
 COQ_SUPPORTS_PROFILE_LTAC := $(findstring -profile-ltac,$(COQ_HELP))
 COQ_SUPPORTS_COMPAT_8_4 := $(call negate_empty,$(findstring Error: Unknown compatibility version,$(shell echo | $(COQBIN)coqtop -compat 8.4 2>&1)))
 COQ_SUPPORTS_REQUIRE_8_4 := $(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -require Coq.Compat.Coq84 2>&1)))
@@ -159,6 +161,7 @@ endef
 $(eval $(call add_arg,NO_NATIVE_COMPILER,-no-native-compiler))
 $(eval $(call add_arg,COMPAT_8_4,-compat 8.4))
 $(eval $(call add_arg,REQUIRE_8_4,-require Coq.Compat.Coq84))
+$(eval $(call add_arg,WARNINGS,-w $(WARNINGS_STRING))
 ifeq (,$(DONT_USE_ADMIT_AXIOM))
 $(eval $(call add_arg,REQUIRE_ADMIT_AXIOM,-require Coq.Compat.AdmitAxiom))
 endif
