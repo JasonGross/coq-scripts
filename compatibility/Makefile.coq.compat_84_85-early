@@ -202,6 +202,9 @@ endif
 ifneq (,$(filter trunk,$(COQ_VERSION))) # trunk
 compatibility: vtrunk
 else
+ifneq (,$(filter 8.5pl2,$(COQ_VERSION))) # 8.5pl2
+compatibility: v8.5pl2
+else
 ifneq (,$(filter 8.5pl1,$(COQ_VERSION))) # 8.5pl1
 compatibility: v8.5pl1
 else
@@ -224,7 +227,7 @@ ifneq (,$(filter 8.6%,$(COQ_VERSION))) # 8.6?
 compatibility: v8.6
 else
 ifneq (,$(filter 8.5%,$(COQ_VERSION))) # 8.5?
-compatibility: v8.5pl1
+compatibility: v8.5pl2
 else
 ifneq (,$(filter 8.4%,$(COQ_VERSION))) # 8.4
 compatibility: v8.4
@@ -234,6 +237,7 @@ compatibility:
 	@ echo 'error: unrecognized version of Coq $(COQ_VERSION)'
 	@ echo
 	@ false
+endif
 endif
 endif
 endif
