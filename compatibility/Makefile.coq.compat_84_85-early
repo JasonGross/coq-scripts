@@ -121,17 +121,12 @@ ifneq (,$(wildcard _CoqProject)) # _CoqProject exists
 _COQPROJECT_CONTENTS := $(shell cat _CoqProject)
 endif
 
-define add_arg
+define add_arg_no_version_echo
 # $(1) - support suffix; $(COQ_SUPPORTS_$(1)) should be nonempty if there is support, empty if there is no support
 # $(2) - arg to pass to coq_makefile (will be wrapped in double and single quotes)
 
 ifneq (,$$(COQ_SUPPORTS_$(1)))
 EXTRA_ECHO += echo '-arg "$(2)"';
-coq-version::
-	@ echo "Supports $(2): Yes"
-else
-coq-version::
-	@ echo "Supports $(2): No"
 endif
 
 ifneq (,$(wildcard _CoqProject)) # _CoqProject exists
@@ -157,11 +152,27 @@ endif
 
 endef
 
+define add_arg
+# $(1) - support suffix; $(COQ_SUPPORTS_$(1)) should be nonempty if there is support, empty if there is no support
+# $(2) - arg to pass to coq_makefile (will be wrapped in double and single quotes)
+
+ifneq (,$$(COQ_SUPPORTS_$(1)))
+coq-version::
+	@ echo "Supports $(2): Yes"
+else
+coq-version::
+	@ echo "Supports $(2): No"
+endif
+
+$(eval $(call add_arg_no_version_echo,$(1),$(2)))
+endef
+
 # the native compiler is broken on Windows, so we disable it in 8.5
 $(eval $(call add_arg,NO_NATIVE_COMPILER,-no-native-compiler))
 $(eval $(call add_arg,COMPAT_8_4,-compat 8.4))
 $(eval $(call add_arg,REQUIRE_8_4,-require Coq.Compat.Coq84))
-$(eval $(call add_arg,WARNINGS,-w -arg "$(WARNINGS_STRING)"))
+$(eval $(call add_arg,WARNINGS,-w))
+$(eval $(call add_arg_no_version_echo,WARNINGS,$(WARNINGS_STRING)))
 ifeq (,$(DONT_USE_ADMIT_AXIOM))
 $(eval $(call add_arg,REQUIRE_ADMIT_AXIOM,-require Coq.Compat.AdmitAxiom))
 endif
