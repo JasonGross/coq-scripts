@@ -180,7 +180,7 @@ endef
 $(eval $(call add_arg,NO_NATIVE_COMPILER,-no-native-compiler))
 $(eval $(call add_arg,COMPAT_8_4,-compat 8.4))
 $(eval $(call add_arg,REQUIRE_8_4,-require Coq.Compat.Coq84))
-$(eval $(call add_arg,WARNINGS,-w $(ARG_SINGLE_QUOTE)$(WARNINGS_STRING)$(ARG_SINGLE_QUOTE)))
+#$(eval $(call add_arg,WARNINGS,-w $(ARG_SINGLE_QUOTE)$(WARNINGS_STRING)$(ARG_SINGLE_QUOTE)))
 ifeq (,$(DONT_USE_ADMIT_AXIOM))
 $(eval $(call add_arg,REQUIRE_ADMIT_AXIOM,-require Coq.Compat.AdmitAxiom))
 endif
@@ -261,4 +261,15 @@ endif
 else
 coq-version::
 	@ echo "Supports -profile-ltac: No"
+endif
+
+WARNINGS_FLAGS?=
+
+ifneq (,$(COQ_SUPPORTS_WARNINGS))
+WARNINGS_FLAGS := -w '$(WARNINGS_STRING)'
+coq-version::
+	@ echo 'Supports -w '"'"'$(WARNINGS_STRING)'"'"': Yes'
+else
+coq-version::
+	@ echo 'Supports -w '"'"'$(WARNINGS_STRING)'"'"': No'
 endif
