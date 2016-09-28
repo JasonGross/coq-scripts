@@ -171,8 +171,7 @@ endef
 $(eval $(call add_arg,NO_NATIVE_COMPILER,-no-native-compiler))
 $(eval $(call add_arg,COMPAT_8_4,-compat 8.4))
 $(eval $(call add_arg,REQUIRE_8_4,-require Coq.Compat.Coq84))
-$(eval $(call add_arg,WARNINGS,-w))
-$(eval $(call add_arg_no_version_echo,WARNINGS,$(WARNINGS_STRING)))
+$(eval $(call add_arg,WARNINGS,-w '$(WARNINGS_STRING)'))
 ifeq (,$(DONT_USE_ADMIT_AXIOM))
 $(eval $(call add_arg,REQUIRE_ADMIT_AXIOM,-require Coq.Compat.AdmitAxiom))
 endif
