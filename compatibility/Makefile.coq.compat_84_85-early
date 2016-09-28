@@ -132,11 +132,13 @@ ifneq (,$$(COQ_SUPPORTS_$(1)))
 EXTRA_ECHO += echo '-arg "$(2)"';
 endif
 
+ECHOED2 := $(shell echo '-arg "$(2)"')
+
 ifneq (,$(wildcard _CoqProject)) # _CoqProject exists
 HAS_NAME := _COQPROJECT_HAS_$(1)
 SUPPORTS_NAME := COQ_SUPPORTS_$(1)
 
-$$(HAS_NAME) := $(findstring -arg "$(2)",$(_COQPROJECT_CONTENTS))
+$$(HAS_NAME) := $(findstring $(ECHOED2),$(_COQPROJECT_CONTENTS))
 
 ifneq (,$$($$(SUPPORTS_NAME))) # supports $(1)
 ifneq (,$$($$(HAS_NAME))) # and has it
