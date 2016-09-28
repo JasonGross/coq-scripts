@@ -129,14 +129,14 @@ define add_arg_no_version_echo
 # $(2) - arg to pass to coq_makefile (will be wrapped in double and single quotes)
 
 ifneq (,$$(COQ_SUPPORTS_$(1)))
-EXTRA_ECHO += echo '-arg $(ARG_SINGLE_QUOTE)$(2)$(ARG_SINGLE_QUOTE)';
+EXTRA_ECHO += echo '-arg "$(2)"';
 endif
 
 ifneq (,$(wildcard _CoqProject)) # _CoqProject exists
 HAS_NAME := _COQPROJECT_HAS_$(1)
 SUPPORTS_NAME := COQ_SUPPORTS_$(1)
 
-$$(HAS_NAME) := $(findstring -arg '$(2)',$(_COQPROJECT_CONTENTS))
+$$(HAS_NAME) := $(findstring -arg "$(2)",$(_COQPROJECT_CONTENTS))
 
 ifneq (,$$($$(SUPPORTS_NAME))) # supports $(1)
 ifneq (,$$($$(HAS_NAME))) # and has it
