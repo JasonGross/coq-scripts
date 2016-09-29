@@ -45,10 +45,11 @@ SHOULD_SILENCE := $(filter 8.5% 8.4%,$(COQ_VERSION))
 COQ_HELP := $(shell $(COQBIN)coqc -help 2>&1)
 
 negate_empty = $(if $(1),,yes)
+and_vals = $(if $(1),$(if $(2),yes,),)
 
 COQ_SUPPORTS_NO_NATIVE_COMPILER := $(findstring -no-native-compiler,$(COQ_HELP))
 COQ_SUPPORTS_PROFILE_LTAC := $(findstring -profile-ltac,$(COQ_HELP))
-COQ_SUPPORTS_WARNINGS := $(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -w '$(WARNINGS_STRING)' 2>&1)))
+COQ_SUPPORTS_WARNINGS := $(call and_vals,$(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -w '$(WARNINGS_STRING)' 2>&1))),$(findstring configure display of warnings,$(COQ_HELP)))
 COQ_SUPPORTS_COMPAT_8_4 := $(call negate_empty,$(findstring Error: Unknown compatibility version,$(shell echo | $(COQBIN)coqtop -compat 8.4 2>&1)))
 COQ_SUPPORTS_REQUIRE_8_4 := $(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -require Coq.Compat.Coq84 2>&1)))
 ifeq (,$(DONT_USE_ADMIT_AXIOM))
