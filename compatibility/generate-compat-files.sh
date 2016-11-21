@@ -17,12 +17,12 @@ function append_text() {
     done
 }
 
-ALL_VERSIONS="8_4 8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6 trunk"
-VECTOR_LIST_VERSIONS="8_4 8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6 trunk"
+ALL_VERSIONS="8_4 8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 trunk"
+VECTOR_LIST_VERSIONS="8_4 8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 trunk"
 NPEANO_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1"
-FMAPFACTS_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6 trunk"
-COQ_MODULE_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6 trunk"
-FAST_SET_AS_SET_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6 trunk"
+FMAPFACTS_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 trunk"
+COQ_MODULE_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 trunk"
+FAST_SET_AS_SET_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 trunk"
 RELATION_ARGUMENTS_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5"
 RAPPLY_SHELVE_VERSIONS="8_5beta1 8_5beta2 8_5beta3"
 MISC_BETA1_VERSIONS="8_5beta1 8_5beta2"
