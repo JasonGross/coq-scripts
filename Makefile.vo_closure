@@ -17,4 +17,4 @@ vo_closure = $(if $1,$(call vo_closure,$(sort $(filter-out $1 $2,$(call read_dep
 # remove duplicates, then make a recursive call with the deduplicated
 # newly found dependencies.  When $1 becomes empty, the result is $2.
 read_reverse_deps = $(foreach vo,$1,$(if $(filter $2,$(call read_deps,$(vo:.vo=.v.d))),$(vo)))
-vo_reverse_closure = $(if $2,$(call vo_reverse_closure,$(sort $(filter-out $2 $3,$(call read_reverse_deps,$1,$2))),$2 $3),$3)
+vo_reverse_closure = $(if $2,$(call vo_reverse_closure,$1,$(sort $(filter-out $2 $3,$(call read_reverse_deps,$1,$2))),$2 $3),$3)
