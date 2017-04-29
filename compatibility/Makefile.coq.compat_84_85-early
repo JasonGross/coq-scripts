@@ -82,7 +82,7 @@ warn-compat-file::
 	@ true
 endif
 
-$(COMPATIBILITY_FILE): $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_4__Compat.v $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_5__Compat.v warn-compat-file
+$(COMPATIBILITY_FILE): $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_4__Compat.v $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_5__Compat.v | warn-compat-file
 	$(Q) $(MAKE) --no-print-directory compatibility
 
 define make_compat_version
