@@ -7,7 +7,7 @@ MAKEFILE=""
 
 function cleanup () {
     PREFILE="${FILE%.ml}"
-    rm -f "$PREFILE.cmi" "$PREFILE.cmo" "$PREFILE.cmx" "$PREFILE.cmxs" "$PREFILE.ml.d" "$PREFILE.o" "$FILE" "$MAKEFILE"
+    rm -f "$PREFILE.cmi" "$PREFILE.cmo" "$PREFILE.cmx" "$PREFILE.cmxs" "$PREFILE.ml.d" "$PREFILE.o" "$FILE" "$MAKEFILE" "$MAKEFILE.conf"
 }
 
 trap cleanup EXIT
