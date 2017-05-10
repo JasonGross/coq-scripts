@@ -2,7 +2,8 @@
 
 ######################################################################
 # Record the compilation performance of the current state of the
-# library and the previous state, and compare them.
+# library and the previous state, and compare them, only on the files
+# that changed.
 #
 # USAGE: etc/coq-scripts/timing/make-pretty-timed-only-diff.sh -j<NUMBER OF THREADS TO USE>
 #
