@@ -3,6 +3,7 @@ _COQPROJECT_IN_NAME?=_CoqProject.in
 _COQPROJECT_NAME?=_CoqProject.in
 COQ_VERSION_FILE=.coq-version
 DONT_USE_ADMIT_AXIOM?=
+USE_BYPASS_API?=
 PROFILE?=
 WARNINGS_STRING?=-deprecated-appcontext -notation-overridden
 
@@ -43,13 +44,14 @@ COQ_VERSION := $(firstword $(subst $(COQ_VERSION_PREFIX),,$(shell $(COQBIN)coqc 
 SHOULD_SILENCE := $(filter 8.5% 8.4%,$(COQ_VERSION))
 
 COQ_HELP := $(shell $(COQBIN)coqc -help 2>&1)
+COQ_MAKEFILE_HELP := $(shell $(COQBIN)coq_makefile -help 2>&1)
 
 negate_empty = $(if $(1),,yes)
 and_vals = $(if $(1),$(if $(2),yes,),)
 
 # N.B. These take up about 1-2 seconds of startup time in `make` :-/
 COQ_SUPPORTS_NO_NATIVE_COMPILER := $(findstring -no-native-compiler,$(COQ_HELP))
-COQ_SUPPORTS_BYPASS_API := $(findstring -bypass-API,$(COQ_HELP))
+COQ_SUPPORTS_BYPASS_API := $(findstring -bypass-API,$(COQ_MAKEFILE_HELP))
 COQ_SUPPORTS_PROFILE_LTAC := $(findstring -profile-ltac,$(COQ_HELP))
 COQ_SUPPORTS_WARNINGS := $(call and_vals,$(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -w '$(WARNINGS_STRING)' 2>&1))),$(findstring configure display of warnings,$(COQ_HELP)))
 COQ_SUPPORTS_COMPAT_8_4 := $(call negate_empty,$(findstring Error: Unknown compatibility version,$(shell echo | $(COQBIN)coqtop -compat 8.4 2>&1)))
@@ -134,12 +136,21 @@ strip_single_quotes = $(subst ',,$(1))
 define add_arg_no_version_echo
 # $(1) - support suffix; $(COQ_SUPPORTS_$(1)) should be nonempty if there is support, empty if there is no support
 # $(2) - arg to pass to coq_makefile (will be wrapped in double and single quotes)
+# $(3) - empty if we should use -arg and quotes; nonempty if the argument should be passed bare
 
 ifneq (,$$(COQ_SUPPORTS_$(1)))
+ifneq (,$(3))
+EXTRA_ECHO += echo '$(2)';
+else
 EXTRA_ECHO += echo '-arg "$(2)"';
 endif
+endif
 
+ifneq (,$(3))
+ECHOED2 := $(shell echo '$(2)')
+else
 ECHOED2 := $(shell echo '-arg "$(2)"')
+endif
 
 ifneq (,$(wildcard _CoqProject)) # _CoqProject exists
 HAS_NAME := _COQPROJECT_HAS_$(1)
@@ -167,6 +178,7 @@ endef
 define add_arg
 # $(1) - support suffix; $(COQ_SUPPORTS_$(1)) should be nonempty if there is support, empty if there is no support
 # $(2) - arg to pass to coq_makefile (will be wrapped in double and single quotes)
+# $(3) - empty if we should use -arg and quotes; nonempty if the argument should be passed bare
 
 ifneq (,$$(COQ_SUPPORTS_$(1)))
 coq-version::
@@ -176,14 +188,16 @@ coq-version::
 	@ echo "Supports $(2): No"
 endif
 
-$(eval $(call add_arg_no_version_echo,$(1),$(2)))
+$(eval $(call add_arg_no_version_echo,$(1),$(2),$(3)))
 endef
 
 # the native compiler is broken on Windows, so we disable it in 8.5
 $(eval $(call add_arg,NO_NATIVE_COMPILER,-no-native-compiler))
-# $(eval $(call add_arg,BYPASS_API,-bypass-API))
 $(eval $(call add_arg,COMPAT_8_4,-compat 8.4))
 $(eval $(call add_arg,REQUIRE_8_4,-require Coq.Compat.Coq84))
+ifneq (,$(USE_BYPASS_API))
+$(eval $(call add_arg,BYPASS_API,-bypass-API,no-arg))
+endif
 #$(eval $(call add_arg,WARNINGS,-w $(ARG_SINGLE_QUOTE)$(WARNINGS_STRING)$(ARG_SINGLE_QUOTE)))
 ifeq (,$(DONT_USE_ADMIT_AXIOM))
 $(eval $(call add_arg,REQUIRE_ADMIT_AXIOM,-require Coq.Compat.AdmitAxiom))
