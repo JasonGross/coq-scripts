@@ -23,6 +23,9 @@ def get_times(file_name):
         lines = f.read()
     reg = re.compile(r'^([^\s]*) \([^\)]*?user: ([0-9\.]+)[^\)]*?\)$', re.MULTILINE)
     times = reg.findall(lines)
+    if all(time in ('0.00', '0.01') for name, time in times):
+        reg = re.compile(r'^([^\s]*) \([^\)]*?real: ([0-9\.]+)[^\)]*?\)$', re.MULTILINE)
+        times = reg.findall(lines)
     times_dict = {}
     if all(STRIP_REG.search(name.strip()) for name, time in times):
         times = tuple((STRIP_REG.sub(STRIP_REP, name.strip()), time) for name, time in times)
