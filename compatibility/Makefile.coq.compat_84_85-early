@@ -23,7 +23,7 @@ FORCE::
 	@ false
 endif
 
-VERSION_TARGETS := v8.6 v8.5pl1 v8.5 v8.5rc1 v8.5beta3 v8.5beta2 v8.5beta1 v8.4 vtrunk
+VERSION_TARGETS := v8.7 v8.6 v8.5pl1 v8.5 v8.5rc1 v8.5beta3 v8.5beta2 v8.5beta1 v8.4 vtrunk vmaster
 
 .PHONY: compatibility $(VERSION_TARGETS) warn-compat-file
 
@@ -113,6 +113,7 @@ endef
 $(eval $(call make_compat_version,v8.4,8_4,v8.4))
 $(eval $(call make_compat_version,v8.5,8_5,v8.5))
 $(eval $(call make_compat_version,v8.6,8_6,v8.6))
+$(eval $(call make_compat_version,v8.7,8_7,v8.7))
 $(eval $(call make_compat_version,v8.5beta1,8_5beta1,v8.5beta1))
 $(eval $(call make_compat_version,v8.5beta2,8_5beta2,v8.5beta2))
 $(eval $(call make_compat_version,v8.5beta3,8_5beta3,v8.5beta3))
@@ -120,6 +121,7 @@ $(eval $(call make_compat_version,v8.5rc1,8_5rc1,v8.5rc1))
 $(eval $(call make_compat_version,v8.5pl1,8_5pl1,v8.5pl1))
 $(eval $(call make_compat_version,v8.5pl2,8_5pl2,v8.5pl2))
 $(eval $(call make_compat_version,trunk,trunk,vtrunk))
+$(eval $(call make_compat_version,master,master,vmaster))
 
 EXTRA_ECHO :=
 UPDATE_COQPROJECT :=
@@ -220,6 +222,9 @@ endif
 ifneq (,$(filter trunk,$(COQ_VERSION))) # trunk
 compatibility: vtrunk
 else
+ifneq (,$(filter master,$(COQ_VERSION))) # master
+compatibility: vmaster
+else
 ifneq (,$(filter 8.5pl2,$(COQ_VERSION))) # 8.5pl2
 compatibility: v8.5pl2
 else
@@ -241,6 +246,9 @@ else
 ifneq (,$(filter 8.5beta1,$(COQ_VERSION))) # 8.5beta1
 compatibility: v8.5beta1
 else
+ifneq (,$(filter 8.7%,$(COQ_VERSION))) # 8.6?
+compatibility: v8.7
+else
 ifneq (,$(filter 8.6%,$(COQ_VERSION))) # 8.6?
 compatibility: v8.6
 else
@@ -255,6 +263,8 @@ compatibility:
 	@ echo 'error: unrecognized version of Coq $(COQ_VERSION)'
 	@ echo
 	@ false
+endif
+endif
 endif
 endif
 endif
