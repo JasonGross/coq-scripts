@@ -21,10 +21,10 @@ def get_times(file_name):
     '''
     with open(file_name, 'r') as f:
         lines = f.read()
-    reg = re.compile(r'^([^\s]*) \([^\)]*?user: ([0-9\.]+)[^\)]*?\)$', re.MULTILINE)
+    reg = re.compile(r'^([^\s]*) \([^\)]*?user: ([0-9\.]+)[^\)]*?\)\s*$', re.MULTILINE)
     times = reg.findall(lines)
     if all(time in ('0.00', '0.01') for name, time in times):
-        reg = re.compile(r'^([^\s]*) \([^\)]*?real: ([0-9\.]+)[^\)]*?\)$', re.MULTILINE)
+        reg = re.compile(r'^([^\s]*) \([^\)]*?real: ([0-9\.]+)[^\)]*?\)\s*$', re.MULTILINE)
         times = reg.findall(lines)
     times_dict = {}
     if all(STRIP_REG.search(name.strip()) for name, time in times):
