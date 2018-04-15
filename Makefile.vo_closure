@@ -7,20 +7,9 @@
 # empty, the result is $2.
 ifdef VDFILE
 # Coq >= 8.8
-# Use sed, grep, and tr to read the .coqdeps.d file into a format
-# *.vo:<list-of-deps> where list-of-deps is separated by |
-vdfile_contents = $(if $(wildcard $(VDFILE).d),$(shell grep -o '[^ :]*\.vo.*:.*' $(VDFILE).d | sed -e 's/ *:/:/g' | sed -e 's/\.vo.*:/.vo:/g' | grep -o '[^ ]*\.vo:/|\([^|:]*\):/ \1:/g'))
-EMPTY :=
-SPACE := $(EMPTY) $(EMPTY)
-read_deps_from = $(subst |,$(SPACE),$(patsubst %:,,$(filter $(1:=:),$2)))
-read_reverse_deps_from = $(foreach vo,$1,$(if $(filter $2,$(call read_deps_from,$(vo),$2)),$(vo)))
-read_deps = $(call read_deps_from,$1,$(vdfile_contents))
-read_reverse_deps = $(call read_reverse_deps_from,$1,$(vdfile_contents))
-#read_deps = $(if $(wildcard $(VDFILE).d),$(filter %.vo,$(foreach vo,$1,$(shell grep '^[^:]*$(vo)[^:]*:' $(VDFILE).d | sed -n 's/^[^:]*: // p'))))
-#read_reverse_deps = $(if $(wildcard $(VDFILE).d),$(filter %.vo,$(foreach vo,$1,$(shell grep '^[^:]*:.*$(vo)' $(VDFILE).d | sed -n 's/:.*// p'))))
+read_deps = $(if $(wildcard $(VDFILE).d),$(filter %.vo,$(foreach vo,$1,$(shell grep '^[^:]*$(vo)[^:]*:' $(VDFILE).d | sed -n 's/^[^:]*: // p'))))
 else
 read_deps = $(if $(wildcard $(1:.vo=.v.d)),$(filter %.vo,$(shell sed -n 's/^[^:]*: // p' $(wildcard $(1:.vo=.v.d)))))
-read_reverse_deps = $(foreach vo,$1,$(if $(filter $2,$(call read_deps,$(vo))),$(vo)))
 endif
 vo_closure = $(if $1,$(call vo_closure,$(sort $(filter-out $1 $2,$(call read_deps,$1))),$1 $2),$2)
 
@@ -32,4 +21,5 @@ vo_closure = $(if $1,$(call vo_closure,$(sort $(filter-out $1 $2,$(call read_dep
 # vo_closure, we filter out previously found dependencies, sort to
 # remove duplicates, then make a recursive call with the deduplicated
 # newly found dependencies.  When $1 becomes empty, the result is $2.
+read_reverse_deps = $(foreach vo,$1,$(if $(filter $2,$(call read_deps,$(vo))),$(vo)))
 vo_reverse_closure = $(if $2,$(call vo_reverse_closure,$1,$(sort $(filter-out $2 $3,$(call read_reverse_deps,$1,$2))),$2 $3),$3)
