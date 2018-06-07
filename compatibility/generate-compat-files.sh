@@ -17,17 +17,17 @@ function append_text() {
     done
 }
 
-ALL_VERSIONS="8_4 8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 8_7 8_8 trunk master"
-VECTOR_LIST_VERSIONS="8_4 8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 8_7 8_8 trunk master"
+ALL_VERSIONS="8_4 8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 8_7 8_8 8_9 trunk master"
+VECTOR_LIST_VERSIONS="8_4 8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 8_7 8_8 8_9 trunk master"
 NPEANO_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1"
 FMAPFACTS_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1"
 COQ_MODULE_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1"
-FAST_SET_AS_SET_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 8_7 8_8 trunk master"
+FAST_SET_AS_SET_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 8_7 8_8 8_9 trunk master"
 RELATION_ARGUMENTS_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5"
 RAPPLY_SHELVE_VERSIONS="8_5beta1 8_5beta2 8_5beta3"
 MISC_BETA1_VERSIONS="8_5beta1 8_5beta2"
 INT_VERSIONS="8_5beta2"
-FUNIND_VERSIONS="8_7 8_8 trunk master"
+FUNIND_VERSIONS="8_7 8_8 8_9 trunk master"
 
 for v in $ALL_VERSIONS; do
     cp -f "Coq__${v}__Compat.v.in" "Coq__${v}__Compat.v"
