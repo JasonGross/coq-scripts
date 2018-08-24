@@ -1,5 +1,7 @@
 (** See https://coq.inria.fr/bugs/show_bug.cgi?id=4319 for updates *)
 
+Require Export Coq.Compat.Coq88.
+
 (** [set (x := y)] is about 50x slower than it needs to be in Coq 8.4,
     but is about 4x faster than the alternatives in 8.5.  See
     https://coq.inria.fr/bugs/show_bug.cgi?id=3280 (comment 13) for
