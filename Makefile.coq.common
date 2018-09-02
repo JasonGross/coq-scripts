@@ -118,24 +118,29 @@ OCAMLOPT_OLD := $(OCAMLOPT)
 OCAMLOPT = $(SILENCE_OCAMLOPT)$(OCAMLOPT_OLD)
 
 clean::
-	$(SHOW)"RM *.CMO *.CMI *.CMA"
-	$(HIDE)rm -f $(ALLCMOFILES) $(CMIFILES) $(CMAFILES)
-	$(SHOW)"RM *.CMX *.CMXS *.CMXA *.O *.A"
-	$(HIDE)rm -f $(ALLCMOFILES:.cmo=.cmx) $(CMXAFILES) $(CMXSFILES) $(ALLCMOFILES:.cmo=.o) $(CMXAFILES:.cmxa=.a)
-	$(SHOW)"RM *.ML.D *.MLI.D *.ML4.D *.MLLIB.D"
-	$(HIDE)rm -f $(addsuffix .d,$(MLFILES) $(MLIFILES) $(ML4FILES) $(MLLIBFILES) $(MLPACKFILES))
-	$(SHOW)"RM *.VO *.VI *.VIO *.G *.V.D *.V.BEAUTIFIED *.V.OLD"
-	$(HIDE)rm -f $(VOFILES) $(VIFILES) $(VOFILES:.vo=.vio) $(GFILES) $(VFILES:.v=.v.d) $(VFILES:=.beautified) $(VFILES:=.old)
-	$(SHOW)"RM *.PS *.PDF *.GLOB *.TEX *.G.TEX"
-	$(HIDE)rm -f all.ps all-gal.ps all.pdf all-gal.pdf all.glob $(VFILES:.v=.glob) $(VFILES:.v=.tex) $(VFILES:.v=.g.tex) all-mli.tex
-	$(SHOW)"FIND .coq-native -DELETE"
+	@# Extension point
+	$(SHOW)'CLEAN'
+	$(HIDE)rm -f $(CMOFILES)
+	$(HIDE)rm -f $(CMIFILES)
+	$(HIDE)rm -f $(CMAFILES)
+	$(HIDE)rm -f $(CMOFILES:.cmo=.cmx)
+	$(HIDE)rm -f $(CMXAFILES)
+	$(HIDE)rm -f $(CMXSFILES)
+	$(HIDE)rm -f $(CMOFILES:.cmo=.o)
+	$(HIDE)rm -f $(CMXAFILES:.cmxa=.a)
+	$(HIDE)rm -f $(ALLDFILES)
+	$(HIDE)rm -f $(NATIVEFILES)
 	$(HIDE)find . -name .coq-native -type d -empty -delete
-	$(SHOW)"RM *.O *.NATIVE"
-	$(HIDE)rm -f $(OBJFILES) $(OBJFILES:.o=.native) $(NATIVEFILES)
-	$(SHOW)"RM *.TIMING *.TIMINGS"
-	$(HIDE)rm -f $(VFILES:.v=.timing) $(VFILES:.v=.timings)
-	- rm -rf html mlihtml uninstall_me.sh
-	rm -f Makefile.coq
+	$(HIDE)rm -f $(VOFILES)
+	$(HIDE)rm -f $(VOFILES:.vo=.vio)
+	$(HIDE)rm -f $(GFILES)
+	$(HIDE)rm -f $(BEAUTYFILES) $(VFILES:=.old)
+	$(HIDE)rm -f all.ps all-gal.ps all.pdf all-gal.pdf all.glob all-mli.tex
+	$(HIDE)rm -f $(VFILES:.v=.glob)
+	$(HIDE)rm -f $(VFILES:.v=.tex)
+	$(HIDE)rm -f $(VFILES:.v=.g.tex)
+	$(HIDE)rm -f pretty-timed-success.ok
+	$(HIDE)rm -rf html mlihtml
 
 include $(Makefile_coq_common_mkfile_dir)/Makefile.vo_closure
 
