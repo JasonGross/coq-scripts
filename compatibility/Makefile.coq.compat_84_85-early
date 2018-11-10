@@ -6,6 +6,7 @@ DONT_USE_ADMIT_AXIOM?=
 USE_BYPASS_API?=
 PROFILE?=
 WARNINGS_STRING?=-deprecated-appcontext -notation-overridden
+EXTRA_PIPE_SED_FOR_COQPROJECT?=
 
 # http://stackoverflow.com/a/18137056/377022
 Makefile_coq_compat_84_85_mkfile_path := $(lastword $(MAKEFILE_LIST))
@@ -127,7 +128,7 @@ $(eval $(call make_compat_version,trunk,trunk,vtrunk))
 $(eval $(call make_compat_version,master,master,vmaster))
 
 EXTRA_ECHO :=
-UPDATE_COQPROJECT :=
+UPDATE_COQPROJECT?=
 ifneq (,$(wildcard _CoqProject)) # _CoqProject exists
 _COQPROJECT_CONTENTS := $(shell cat _CoqProject)
 endif
@@ -209,7 +210,7 @@ $(eval $(call add_arg,REQUIRE_ADMIT_AXIOM,-require Coq.Compat.AdmitAxiom))
 endif
 
 _CoqProject: $(_COQPROJECT_IN_NAME)
-	($(EXTRA_ECHO) cat "$<") > "$@"
+	($(EXTRA_ECHO) (cat "$<" $(EXTRA_PIPE_SED_FOR_COQPROJECT) ) > "$@"
 
 ifneq (,$(wildcard _CoqProject)) # _CoqProject exists
 ifneq (,$(UPDATE_COQPROJECT))
