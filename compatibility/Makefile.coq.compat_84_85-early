@@ -210,7 +210,7 @@ $(eval $(call add_arg,REQUIRE_ADMIT_AXIOM,-require Coq.Compat.AdmitAxiom))
 endif
 
 _CoqProject: $(_COQPROJECT_IN_NAME)
-	($(EXTRA_ECHO) (cat "$<" $(EXTRA_PIPE_SED_FOR_COQPROJECT) ) > "$@"
+	($(EXTRA_ECHO) (cat "$<" $(EXTRA_PIPE_SED_FOR_COQPROJECT) ) ) > "$@"
 
 ifneq (,$(wildcard _CoqProject)) # _CoqProject exists
 ifneq (,$(UPDATE_COQPROJECT))
