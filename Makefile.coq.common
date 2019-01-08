@@ -101,7 +101,7 @@ IS_SUPER_FAST := 0
 endif
 
 ifneq ($(IS_SUPER_FAST),1)
--include Makefile.coq
+include Makefile.coq
 endif
 
 # 0 if same, 1 if different
