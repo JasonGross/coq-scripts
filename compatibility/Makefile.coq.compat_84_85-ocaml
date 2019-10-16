@@ -19,6 +19,8 @@ update-ml-files:: FORCE
 	@ echo '## Switching to OCaml files for $(ML_DESCRIPTION).'
 	@ echo "## "
 
+ocaml_test_files_are_same = $(shell cmp -s $(1) $(2); echo $$?)
+
 define SET_ML_COMPATIBILITY
 # $(1) - path to base ml file
 # $(2) - expected extension
@@ -34,7 +36,7 @@ FORCE::
 	@ false
 endif
 
-ifneq ($(call test_files_are_same,$(1),$(1)$(2)),0)
+ifneq ($(call ocaml_test_files_are_same,$(1),$(1)$(2)),0)
 $(1): update-ml-files
 
 update-ml-files::
