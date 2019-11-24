@@ -24,7 +24,7 @@ FORCE::
 	@ false
 endif
 
-VERSION_TARGETS := v8.11 v8.10 v8.9 v8.8 v8.7 v8.6 v8.5pl1 v8.5 v8.5rc1 v8.5beta3 v8.5beta2 v8.5beta1 v8.4 vtrunk vmaster
+VERSION_TARGETS := v8.12 v8.11 v8.10 v8.9 v8.8 v8.7 v8.6 v8.5pl1 v8.5 v8.5rc1 v8.5beta3 v8.5beta2 v8.5beta1 v8.4 vtrunk vmaster
 
 .PHONY: compatibility $(VERSION_TARGETS) warn-compat-file
 
@@ -119,6 +119,7 @@ $(eval $(call make_compat_version,v8.8,8_8,v8.8))
 $(eval $(call make_compat_version,v8.9,8_9,v8.9))
 $(eval $(call make_compat_version,v8.10,8_10,v8.10))
 $(eval $(call make_compat_version,v8.11,8_11,v8.11))
+$(eval $(call make_compat_version,v8.12,8_12,v8.12))
 $(eval $(call make_compat_version,v8.5beta1,8_5beta1,v8.5beta1))
 $(eval $(call make_compat_version,v8.5beta2,8_5beta2,v8.5beta2))
 $(eval $(call make_compat_version,v8.5beta3,8_5beta3,v8.5beta3))
@@ -251,6 +252,9 @@ else
 ifneq (,$(filter 8.5beta1,$(COQ_VERSION))) # 8.5beta1
 compatibility: v8.5beta1
 else
+ifneq (,$(filter 8.12%,$(COQ_VERSION))) # 8.12?
+compatibility: v8.12
+else
 ifneq (,$(filter 8.11%,$(COQ_VERSION))) # 8.11?
 compatibility: v8.11
 else
@@ -280,6 +284,7 @@ compatibility:
 	@ echo 'error: unrecognized version of Coq $(COQ_VERSION)'
 	@ echo
 	@ false
+endif
 endif
 endif
 endif

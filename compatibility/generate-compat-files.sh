@@ -17,22 +17,24 @@ function append_text() {
     done
 }
 
-ALL_VERSIONS="8_4 8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 8_7 8_8 8_9 8_10 8_11 trunk master"
-VECTOR_LIST_VERSIONS="8_4 8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 8_7 8_8 8_9 8_10 8_11 trunk master"
+ALL_VERSIONS="8_4 8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 8_7 8_8 8_9 8_10 8_11 8_12 trunk master"
+VECTOR_LIST_VERSIONS="8_4 8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 8_7 8_8 8_9 8_10 8_11 8_12 trunk master"
 NPEANO_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1"
 FMAPFACTS_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1"
 COQ_MODULE_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1"
-FAST_SET_AS_SET_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 8_7 8_8 8_9 8_10 8_11 trunk master"
+FAST_SET_AS_SET_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5 8_5pl1 8_6beta1 8_6 8_7 8_8 8_9 8_10 8_11 8_12 trunk master"
 RELATION_ARGUMENTS_VERSIONS="8_5beta1 8_5beta2 8_5beta3 8_5rc1 8_5"
 RAPPLY_SHELVE_VERSIONS="8_5beta1 8_5beta2 8_5beta3"
 MISC_BETA1_VERSIONS="8_5beta1 8_5beta2"
 INT_VERSIONS="8_5beta2"
-FUNIND_VERSIONS="8_7 8_8 8_9 8_10 8_11 trunk master"
-GRAB_88_VERSIONS="8_9 8_10 8_11 master"
+FUNIND_VERSIONS="8_7 8_8 8_9 8_10 8_11 8_12 trunk master"
+GRAB_88_VERSIONS="8_9 8_10 8_11"
+GRAB_88v811_VERSIONS="8_12 master"
 
 for v in $ALL_VERSIONS; do
     cp -f "Coq__${v}__Compat.v.in" "Coq__${v}__Compat.v"
 done
+append "fragments/Grab88v811.v" "$GRAB_88v811_VERSIONS"
 append "fragments/Grab88.v" "$GRAB_88_VERSIONS"
 append "fragments/FastSetAsSet.v" "$FAST_SET_AS_SET_VERSIONS"
 append "fragments/RelationArguments.v" "$RELATION_ARGUMENTS_VERSIONS"
