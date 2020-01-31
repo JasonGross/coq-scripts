@@ -70,9 +70,9 @@ $MAKECMD -k
 # make the old version
 
 # if we're interrupted, first run `git checkout $HEAD` to clean up
-trap "git checkout '$BRANCH_MOV' && exit 1" SIGHUP SIGINT SIGTERM
+trap "git checkout '$BRANCH_MOV'; git submodule update --recursive; exit 1" SIGHUP SIGINT SIGTERM
 
-git checkout "$PREV_COMMIT" || exit 1
+(git checkout "$PREV_COMMIT" && git submodule update --recursive) || exit 1
 
 # run the given `make` command, passing `TIMED=1` to get timing and
 # `-k` to continue even if files fail
@@ -80,7 +80,7 @@ $MAKECMD TIMED=1 -k 2>&1 | tee "$OLD_FILE"
 
 
 # there is a diff, so restore the changes
-git checkout "$BRANCH_MOV" || exit 1
+(git checkout "$BRANCH_MOV" && git submodule update --recursive) || exit 1
 # now if we're interrupted, we should only exit immediately
 trap "exit 1" SIGHUP SIGINT SIGTERM
 # run the given `make` command, passing `TIMED=1` to get timing and
