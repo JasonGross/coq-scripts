@@ -257,20 +257,22 @@ def adjust_fuzz(left_dict, right_dict, fuzz):
 def fix_sign_for_sorting(num, descending=True):
     return -num if descending else num
 
-def make_sorting_key(times_dict, descending=True):
+def make_sorting_key(stats_dict, descending=True):
     def get_key(name):
-        minutes, seconds = times_dict[name][TIME_KEY].replace('s', '').split('m')
+        if TIME_KEY not in stats_dict[name].keys():
+            print('WARNING: %s has no time key: %s' % (name, repr(stats_dict[name])), file=sys.stderr)
+        minutes, seconds = stats_dict[name].get(TIME_KEY, '0m00s').replace('s', '').split('m')
         return (fix_sign_for_sorting(int(minutes), descending=descending),
                 fix_sign_for_sorting(float(seconds), descending=descending),
                 name)
     return get_key
 
-def get_sorted_file_list_from_times_dict(times_dict, descending=True):
+def get_sorted_file_list_from_stats_dict(stats_dict, descending=True):
     '''
     Takes the output dict of get_times and returns the list of keys,
     sorted by duration.
     '''
-    return sorted(times_dict.keys(), key=make_sorting_key(times_dict, descending=descending))
+    return sorted(stats_dict.keys(), key=make_sorting_key(stats_dict, descending=descending))
 
 def to_seconds(time):
     '''
@@ -341,18 +343,18 @@ def make_diff_table_string(left_dict, right_dict,
     else: # sort_by == 'auto'
         get_key = (lambda name: (get_key_diff_absint(name), get_key_abs(name)))
     names = sorted(all_names_dict.keys(), key=get_key)
-    #names = get_sorted_file_list_from_times_dict(all_names_dict, descending=descending)
+    #names = get_sorted_file_list_from_stats_dict(all_names_dict, descending=descending)
     # set the widths of each of the columns by the longest thing to go in that column
-    left_sum = sum_times(v[TIME_KEY] for v in left_dict.values())
-    right_sum = sum_times(v[TIME_KEY] for v in right_dict.values())
-    left_sum_float = sum(sorted(to_seconds(v[TIME_KEY]) for v in left_dict.values()))
-    right_sum_float = sum(sorted(to_seconds(v[TIME_KEY]) for v in right_dict.values()))
+    left_sum = sum_times(v[TIME_KEY] for v in left_dict.values() if TIME_KEY in v.keys())
+    right_sum = sum_times(v[TIME_KEY] for v in right_dict.values() if TIME_KEY in v.keys())
+    left_sum_float = sum(sorted(to_seconds(v[TIME_KEY]) for v in left_dict.values() if TIME_KEY in v.keys()))
+    right_sum_float = sum(sorted(to_seconds(v[TIME_KEY]) for v in right_dict.values() if TIME_KEY in v.keys()))
     diff_sum = from_seconds(left_sum_float - right_sum_float, signed=True)
     percent_diff_sum = (format_percentage((left_sum_float - right_sum_float) / right_sum_float)
                         if right_sum_float > 0 else 'N/A')
 
-    left_width = max(max(map(len, ['N/A', left_tag] + [v[TIME_KEY] for v in left_dict.values()])), len(left_sum))
-    right_width = max(max(map(len, ['N/A', right_tag] + [v[TIME_KEY] for v in right_dict.values()])), len(right_sum))
+    left_width = max(max(map(len, ['N/A', left_tag] + [v[TIME_KEY] for v in left_dict.values() if TIME_KEY in v.keys()])), len(left_sum))
+    right_width = max(max(map(len, ['N/A', right_tag] + [v[TIME_KEY] for v in right_dict.values() if TIME_KEY in v.keys()])), len(right_sum))
     far_right_width = max(max(map(len, ['N/A', change_tag] + list(diff_times_dict.values()))), len(diff_sum))
     far_far_right_width = max(max(map(len, ['N/A', percent_change_tag] + list(percent_diff_times_dict.values()))), len(percent_diff_sum))
     total_string = 'Total' if not include_mem else 'Total Time / Peak Mem'
@@ -423,9 +425,9 @@ def make_table_string(stats_dict,
     if len(stats_dict.keys()) == 0: return 'No timing data'
     # We first get the names of all of the compiled files, sorted by
     # duration
-    names = get_sorted_file_list_from_times_dict(stats_dict, descending=descending)
+    names = get_sorted_file_list_from_stats_dict(stats_dict, descending=descending)
     # compute the widths of the columns
-    times_width = max(len('N/A'), len(tag), max(len(v[TIME_KEY]) for v in stats_dict.values()), len(sum_times(v[TIME_KEY] for v in stats_dict.values())))
+    times_width = max(len('N/A'), len(tag), max(len(v[TIME_KEY]) for v in stats_dict.values() if TIME_KEY in v.keys()), len(sum_times(v[TIME_KEY] for v in stats_dict.values() if TIME_KEY in v.keys())))
     mems_width = max(len('N/A'), len(mem_tag), max(len(mem_fmt % v.get(MEM_KEY, 0)) for v in stats_dict.values()), len(mem_fmt % (max(v.get(MEM_KEY, 0) for v in stats_dict.values()))))
     total_string = 'Total' if not include_mem else 'Total Time / Peak Mem'
     names_width = max(map(len, names + ["File Name", total_string]))
@@ -435,7 +437,7 @@ def make_table_string(stats_dict,
         format_string = "%%(time)-%ds | %%(name)-%ds" % (times_width, names_width)
     get_formatted_mem = (lambda k, v: (mem_fmt % v[k]) if k in v.keys() else 'N/A')
     header = format_string % {'time': tag, 'mem': mem_tag, 'name': 'File Name'}
-    total = format_string % {'time': sum_times(v[TIME_KEY] for v in stats_dict.values()),
+    total = format_string % {'time': sum_times(v[TIME_KEY] for v in stats_dict.values() if TIME_KEY in v.keys()),
                              'mem': ((mem_fmt % max(v[MEM_KEY] for v in stats_dict.values() if MEM_KEY in v.keys())) if any(MEM_KEY in v.keys() for v in stats_dict.values()) else 'N/A'),
                              'name': total_string}
     sep = '-' * len(header)

@@ -38,7 +38,7 @@ OLD_FILE="$3"
 # make the new version, so we get just the changes
 trap "exit 1" SIGHUP SIGINT SIGTERM
 
-$MAKECMD -k
+$MAKECMD -k --output-sync
 
 # make the old version
 
@@ -50,7 +50,7 @@ trap "git stash pop && exit 1" SIGHUP SIGINT SIGTERM
 
 # run the given `make` command, passing `TIMED=1` to get timing and
 # `-k` to continue even if files fail
-$MAKECMD TIMED=1 -k 2>&1 | tee "$OLD_FILE"
+$MAKECMD TIMED=1 -k --output-sync 2>&1 | tee "$OLD_FILE"
 
 
 # make the current version
@@ -65,7 +65,7 @@ else
     trap "exit 1" SIGHUP SIGINT SIGTERM
     # run the given `make` command, passing `TIMED=1` to get timing
     # and `-k` to continue even if files fail
-    $MAKECMD TIMED=1 -k 2>&1 | tee "$NEW_FILE"
+    $MAKECMD TIMED=1 -k --output-sync 2>&1 | tee "$NEW_FILE"
 fi
 
 popd 1>/dev/null
