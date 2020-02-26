@@ -379,16 +379,16 @@ def make_diff_table_string(left_dict, right_dict,
     far_far_right_mem_width = max(max(map(len, ['N/A', percent_change_mem_tag] + list(percent_diff_mems_dict.values()))), len(percent_diff_peak))
 
     if include_mem:
-        format_string = ("%%(left)-%ds | %%(left_mem)-%ds | %%(middle)-%ds | %%(right)-%ds | %%(right_mem)-%ds || %%(far_right)-%ds || %%(far_right_mem)-%ds"
+        format_string = ("%%(left)%ds | %%(left_mem)%ds | %%(middle)-%ds | %%(right)%ds | %%(right_mem)%ds || %%(far_right)%ds || %%(far_right_mem)%ds"
                          % (left_width, left_mem_width, middle_width, right_width, right_mem_width, far_right_width, far_right_mem_width))
     else:
-        format_string = ("%%(left)-%ds | %%(middle)-%ds | %%(right)-%ds || %%(far_right)-%ds"
+        format_string = ("%%(left)%ds | %%(middle)-%ds | %%(right)%ds || %%(far_right)%ds"
                          % (left_width, middle_width, right_width, far_right_width))
 
     if with_percent:
-        format_string += " | %%(far_far_right)-%ds" % far_far_right_width
+        format_string += " | %%(far_far_right)%ds" % far_far_right_width
         if include_mem:
-            format_string += " | %%(far_far_right_mem)-%ds" % far_far_right_mem_width
+            format_string += " | %%(far_far_right_mem)%ds" % far_far_right_mem_width
 
     header = format_string % {'left': left_tag, 'left_mem': left_mem_tag,
                               'middle': tag,
@@ -403,8 +403,8 @@ def make_diff_table_string(left_dict, right_dict,
     # separator to go between headers and body
     sep = '-' * len(header)
     # the representation of the default value (0), to get replaced by N/A
-    left_rep, right_rep, far_right_rep, far_far_right_rep = ("%%-%ds | " % left_width) % 'N/A', (" | %%-%ds |" % right_width) % 'N/A', ("|| %%-%ds" % far_right_width) % 'N/A', ("| %%-%ds" % far_far_right_width) % 'N/A'
-    left_mem_rep, right_mem_rep, far_right_mem_rep, far_far_right_mem_rep = ("%%-%ds | " % left_mem_width) % 'N/A', (" | %%-%ds |" % right_mem_width) % 'N/A', ("|| %%-%ds" % far_right_mem_width) % 'N/A', ("| %%-%ds" % far_far_right_mem_width) % 'N/A'
+    left_rep, right_rep, far_right_rep, far_far_right_rep = ("%%%ds | " % left_width) % 'N/A', (" | %%%ds |" % right_width) % 'N/A', ("|| %%%ds" % far_right_width) % 'N/A', ("| %%%ds" % far_far_right_width) % 'N/A'
+    left_mem_rep, right_mem_rep, far_right_mem_rep, far_far_right_mem_rep = ("%%%ds | " % left_mem_width) % 'N/A', (" | %%%ds |" % right_mem_width) % 'N/A', ("|| %%%ds" % far_right_mem_width) % 'N/A', ("| %%%ds" % far_far_right_mem_width) % 'N/A'
     get_formatted_mem = (lambda k, v: (mem_fmt % v[k]) if k in v.keys() else 'N/A')
     return '\n'.join([header, sep, total, sep] +
                      [format_string % {'left': left_dict.get(name, {}).get(TIME_KEY, 'N/A'),
@@ -432,9 +432,9 @@ def make_table_string(stats_dict,
     total_string = 'Total' if not include_mem else 'Total Time / Peak Mem'
     names_width = max(map(len, names + ["File Name", total_string]))
     if include_mem:
-        format_string = "%%(time)-%ds | %%(mem)-%ds | %%(name)-%ds" % (times_width, mems_width, names_width)
+        format_string = "%%(time)%ds | %%(mem)%ds | %%(name)-%ds" % (times_width, mems_width, names_width)
     else:
-        format_string = "%%(time)-%ds | %%(name)-%ds" % (times_width, names_width)
+        format_string = "%%(time)%ds | %%(name)-%ds" % (times_width, names_width)
     get_formatted_mem = (lambda k, v: (mem_fmt % v[k]) if k in v.keys() else 'N/A')
     header = format_string % {'time': tag, 'mem': mem_tag, 'name': 'File Name'}
     total = format_string % {'time': sum_times(v[TIME_KEY] for v in stats_dict.values() if TIME_KEY in v.keys()),
