@@ -56,9 +56,10 @@ COQ_SUPPORTS_BYPASS_API := $(findstring -bypass-API,$(COQ_MAKEFILE_HELP))
 COQ_SUPPORTS_PROFILE_LTAC := $(findstring -profile-ltac,$(COQ_HELP))
 COQ_SUPPORTS_WARNINGS := $(call and_vals,$(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -w '$(WARNINGS_STRING)' 2>&1))),$(findstring configure display of warnings,$(COQ_HELP)))
 COQ_SUPPORTS_COMPAT_8_4 := $(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -compat 8.4 2>&1)))
-COQ_SUPPORTS_REQUIRE_8_4 := $(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -require Coq.Compat.Coq84 2>&1)))
+COQ_SUPPORTS_REQUIRE_8_4 := $(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -require Coq.Compat.Coq84 2>&1 || echo "Error: $$?")))
 ifeq (,$(DONT_USE_ADMIT_AXIOM))
-COQ_SUPPORTS_REQUIRE_ADMIT_AXIOM := $(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -require Coq.Compat.AdmitAxiom 2>&1)))
+COQ_SUPPORTS_REQUIRE_ADMIT_AXIOM := $(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -require Coq.Compat.AdmitAxiom 2>&1 || echo "Error: $$?")))
+COQ_SUPPORTS_REQUIRE_IMPORT_ADMIT_AXIOM := $(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -require-import Coq.Compat.AdmitAxiom 2>&1)))
 endif
 
 coq-version::
@@ -209,6 +210,7 @@ endif
 #$(eval $(call add_arg,WARNINGS,-w $(ARG_SINGLE_QUOTE)$(WARNINGS_STRING)$(ARG_SINGLE_QUOTE)))
 ifeq (,$(DONT_USE_ADMIT_AXIOM))
 $(eval $(call add_arg,REQUIRE_ADMIT_AXIOM,-require Coq.Compat.AdmitAxiom))
+$(eval $(call add_arg,REQUIRE_IMPORT_ADMIT_AXIOM,-require-import Coq.Compat.AdmitAxiom))
 endif
 
 _CoqProject: $(_COQPROJECT_IN_NAME)
