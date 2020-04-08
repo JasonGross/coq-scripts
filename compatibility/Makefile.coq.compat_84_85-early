@@ -59,7 +59,7 @@ COQ_SUPPORTS_COMPAT_8_4 := $(call negate_empty,$(findstring Error,$(shell echo |
 COQ_SUPPORTS_REQUIRE_8_4 := $(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -require Coq.Compat.Coq84 2>&1 || echo "Error: $$?")))
 ifeq (,$(DONT_USE_ADMIT_AXIOM))
 COQ_SUPPORTS_REQUIRE_ADMIT_AXIOM := $(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -require Coq.Compat.AdmitAxiom 2>&1 || echo "Error: $$?")))
-COQ_SUPPORTS_REQUIRE_IMPORT_ADMIT_AXIOM := $(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -require-import Coq.Compat.AdmitAxiom 2>&1)))
+COQ_SUPPORTS_REQUIRE_IMPORT_ADMIT_AXIOM := $(call negate_empty,$(findstring Error,$(shell echo | $(COQBIN)coqtop -require-import Coq.Compat.AdmitAxiom 2>&1 || echo "Error: $$?")))
 endif
 
 coq-version::
