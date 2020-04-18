@@ -40,6 +40,11 @@ def add_sort_by(parser):
               'The "absolute" method sorts by the total time taken.\n' +
               'The "diff" method sorts by the signed difference in time.'))
 
+def add_sort_by_mem(parser):
+    return parser.add_argument(
+        '--sort-by-mem', action='store_true', dest='sort_by_mem',
+        help=('Sort the table entries by memory rather than time.'))
+
 def add_fuzz(parser):
     return parser.add_argument(
         '--fuzz', dest='fuzz', metavar='N', type=nonnegative, default=0,
@@ -257,22 +262,30 @@ def adjust_fuzz(left_dict, right_dict, fuzz):
 def fix_sign_for_sorting(num, descending=True):
     return -num if descending else num
 
-def make_sorting_key(stats_dict, descending=True):
-    def get_key(name):
-        if TIME_KEY not in stats_dict[name].keys():
-            print('WARNING: %s has no time key: %s' % (name, repr(stats_dict[name])), file=sys.stderr)
-        minutes, seconds = stats_dict[name].get(TIME_KEY, '0m00s').replace('s', '').split('m')
-        return (fix_sign_for_sorting(int(minutes), descending=descending),
-                fix_sign_for_sorting(float(seconds), descending=descending),
-                name)
+def make_sorting_key(stats_dict, descending=True, sort_by_mem=False):
+    if sort_by_mem:
+        def get_key(name):
+            if MEM_KEY not in stats_dict[name].keys():
+                print('WARNING: %s has no mem key: %s' % (name, repr(stats_dict[name])), file=sys.stderr)
+            mem = stats_dict[name].get(MEM_KEY, '0')
+            return (fix_sign_for_sorting(int(mem), descending=descending),
+                    name)
+    else:
+        def get_key(name):
+            if TIME_KEY not in stats_dict[name].keys():
+                print('WARNING: %s has no time key: %s' % (name, repr(stats_dict[name])), file=sys.stderr)
+            minutes, seconds = stats_dict[name].get(TIME_KEY, '0m00s').replace('s', '').split('m')
+            return (fix_sign_for_sorting(int(minutes), descending=descending),
+                    fix_sign_for_sorting(float(seconds), descending=descending),
+                    name)
     return get_key
 
-def get_sorted_file_list_from_stats_dict(stats_dict, descending=True):
+def get_sorted_file_list_from_stats_dict(stats_dict, descending=True, sort_by_mem=False):
     '''
     Takes the output dict of get_times and returns the list of keys,
     sorted by duration.
     '''
-    return sorted(stats_dict.keys(), key=make_sorting_key(stats_dict, descending=descending))
+    return sorted(stats_dict.keys(), key=make_sorting_key(stats_dict, descending=descending, sort_by_mem=sort_by_mem))
 
 def to_seconds(time):
     '''
@@ -311,7 +324,7 @@ def format_percentage(num, signed=True):
 
 def make_diff_table_string(left_dict, right_dict,
                            sort_by='auto',
-                           descending=True,
+                           descending=True, sort_by_mem=False,
                            left_tag='After', tag='File Name', right_tag='Before', with_percent=True,
                            left_mem_tag='Peak Mem', right_mem_tag='Peak Mem',
                            include_mem=False,
@@ -332,16 +345,30 @@ def make_diff_table_string(left_dict, right_dict,
     percent_diff_times_dict = dict((name, ((format_percentage((lseconds - rseconds) / rseconds))
                                            if rseconds != 0 else (INFINITY if lseconds > 0 else 'N/A')))
                                    for name, lseconds, rseconds in prediff_times)
+
+    get_mem = (lambda d, name: d.get(name, {}).get(MEM_KEY, 0))
+    prediff_mems = tuple((name, get_mem(left_dict, name), get_mem(right_dict, name))
+                         for name in all_names_dict.keys())
+    diff_mems_dict = dict((name, lmem - rmem) for name, lmem, rmem in prediff_mems)
+    percent_diff_mems_dict = dict((name, ((format_percentage((lmem - rmem) / float(rmem)))
+                                          if rmem != 0 else (INFINITY if lmem > 0 else 'N/A')))
+                                  for name, lmem, rmem in prediff_mems)
+
     # update to sort by approximate difference, first
-    get_key_abs = make_sorting_key(all_names_dict, descending=descending)
-    get_key_diff_float = (lambda name: fix_sign_for_sorting(to_seconds(diff_times_dict[name]), descending=descending))
-    get_key_diff_absint = (lambda name: fix_sign_for_sorting(int(abs(to_seconds(diff_times_dict[name]))), descending=descending))
+    if sort_by_mem:
+        get_prekey = (lambda name: diff_mems_dict[name])
+    else:
+        get_prekey = (lambda name: to_seconds(diff_times_dict[name]))
+    get_key_abs = make_sorting_key(all_names_dict, descending=descending, sort_by_mem=sort_by_mem)
+    get_key_diff_float = (lambda name: fix_sign_for_sorting(get_prekey(name), descending=descending))
+    get_key_diff_absint = (lambda name: fix_sign_for_sorting(int(abs(get_prekey(name))), descending=descending))
+    get_key_with_name = (lambda get_key: lambda name: (get_key(name), name))
     if sort_by == 'absolute':
-        get_key = get_key_abs
+        get_key = get_key_with_name(get_key_abs)
     elif sort_by == 'diff':
-        get_key = get_key_diff_float
+        get_key = get_key_with_name(get_key_diff_float)
     else: # sort_by == 'auto'
-        get_key = (lambda name: (get_key_diff_absint(name), get_key_abs(name)))
+        get_key = get_key_with_name((lambda name: (get_key_diff_absint(name), get_key_abs(name))))
     names = sorted(all_names_dict.keys(), key=get_key)
     #names = get_sorted_file_list_from_stats_dict(all_names_dict, descending=descending)
     # set the widths of each of the columns by the longest thing to go in that column
@@ -360,13 +387,6 @@ def make_diff_table_string(left_dict, right_dict,
     total_string = 'Total' if not include_mem else 'Total Time / Peak Mem'
     middle_width = max(map(len, names + [tag, total_string]))
 
-    get_mem = (lambda d, name: d.get(name, {}).get(MEM_KEY, 0))
-    prediff_mems = tuple((name, get_mem(left_dict, name), get_mem(right_dict, name))
-                         for name in all_names_dict.keys())
-    diff_mems_dict = dict((name, lmem - rmem) for name, lmem, rmem in prediff_mems)
-    percent_diff_mems_dict = dict((name, ((format_percentage((lmem - rmem) / float(rmem)))
-                                          if rmem != 0 else (INFINITY if lmem > 0 else 'N/A')))
-                                  for name, lmem, rmem in prediff_mems)
     left_peak = max(v.get(MEM_KEY, 0) for v in left_dict.values())
     right_peak = max(v.get(MEM_KEY, 0) for v in right_dict.values())
     diff_peak = left_peak - right_peak
@@ -419,13 +439,13 @@ def make_diff_table_string(left_dict, right_dict,
                       for name in names]).replace(left_rep, 'N/A'.center(len(left_rep) - 3) + ' | ').replace(right_rep, ' | ' + 'N/A'.center(len(right_rep) - 5) + ' |').replace(far_right_rep, '|| ' + 'N/A'.center(len(far_right_rep) - 3)).replace(far_far_right_rep, '| ' + 'N/A'.center(len(far_far_right_rep) - 2)).replace(left_mem_rep, 'N/A'.center(len(left_mem_rep) - 3) + ' | ').replace(right_mem_rep, ' | ' + 'N/A'.center(len(right_mem_rep) - 5) + ' |').replace(far_right_mem_rep, '|| ' + 'N/A'.center(len(far_right_mem_rep) - 3)).replace(far_far_right_mem_rep, '| ' + 'N/A'.center(len(far_far_right_mem_rep) - 2))
 
 def make_table_string(stats_dict,
-                      descending=True,
+                      descending=True, sort_by_mem=False,
                       tag="Time", mem_tag="Peak Mem", mem_fmt='%d ko',
                       include_mem=False):
     if len(stats_dict.keys()) == 0: return 'No timing data'
     # We first get the names of all of the compiled files, sorted by
     # duration
-    names = get_sorted_file_list_from_stats_dict(stats_dict, descending=descending)
+    names = get_sorted_file_list_from_stats_dict(stats_dict, descending=descending, sort_by_mem=sort_by_mem)
     # compute the widths of the columns
     times_width = max(len('N/A'), len(tag), max(len(v[TIME_KEY]) for v in stats_dict.values() if TIME_KEY in v.keys()), len(sum_times(v[TIME_KEY] for v in stats_dict.values() if TIME_KEY in v.keys())))
     mems_width = max(len('N/A'), len(mem_tag), max(len(mem_fmt % v.get(MEM_KEY, 0)) for v in stats_dict.values()), len(mem_fmt % (max(v.get(MEM_KEY, 0) for v in stats_dict.values()))))
