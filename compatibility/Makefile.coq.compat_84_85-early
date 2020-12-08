@@ -201,7 +201,8 @@ endef
 
 # the native compiler is broken on Windows, so we disable it in 8.5
 $(eval $(call add_arg,NO_NATIVE_COMPILER,-no-native-compiler))
-$(eval $(call add_arg,NATIVE_COMPILER_ONDEMAND,-native-compiler ondemand))
+# the native compiler hangs trying to compile files, so we disable it
+$(eval $(call add_arg,NATIVE_COMPILER_ONDEMAND,-native-compiler no))
 $(eval $(call add_arg,COMPAT_8_4,-compat 8.4))
 $(eval $(call add_arg,REQUIRE_8_4,-require Coq.Compat.Coq84))
 ifneq (,$(USE_BYPASS_API))
