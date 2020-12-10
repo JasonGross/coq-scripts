@@ -11,7 +11,7 @@ Makefile_coq_compat_84_85_ocaml_current_absdir := $(notdir $(Makefile_coq_compat
 FAST_TARGETS += update-ml-files
 SUPER_FAST_TARGETS += update-ml-files
 
-TEST_EXISTS_ML_FUNCTION_OUTPUT=/dev/null
+TEST_EXISTS_ML_FUNCTION_OUTPUT=&2 # /dev/null
 test_exists_ml_function = $(strip $(shell FUNCTION="$1" COQBIN="$(COQBIN)" $(Makefile_coq_compat_84_85_ocaml_mkfile_dir)/test-exists-ml-function.sh >$(TEST_EXISTS_ML_FUNCTION_OUTPUT) 2>$(TEST_EXISTS_ML_FUNCTION_OUTPUT); echo $$?))
 
 update-ml-files:: FORCE
