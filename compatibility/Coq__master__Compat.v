@@ -19,7 +19,6 @@ Require Coq.ZArith.BinIntDef Coq.PArith.BinPosDef Coq.NArith.BinNatDef.
 Require Coq.Reals.Rdefinitions.
 Require Coq.Numbers.Cyclic.Int63.Int63.
 Require Coq.Numbers.Cyclic.Int31.Int31.
-Declare ML Module "int63_syntax_plugin".
 Numeral Notation BinNums.Z BinIntDef.Z.of_int BinIntDef.Z.to_int : Z_scope.
 Numeral Notation BinNums.positive BinPosDef.Pos.of_int BinPosDef.Pos.to_int : positive_scope.
 Numeral Notation BinNums.N BinNatDef.N.of_int BinNatDef.N.to_int : N_scope.
