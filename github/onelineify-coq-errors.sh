@@ -2,12 +2,22 @@
 
 set -e
 
+curerr=""
+
 while read i
 do
     # ^File \"([^ \"]+)\", line (\\d+), characters (\\d+-\\d+):
     if [[ "$i" == "File "*:* ]]; then # first line of error
-        echo
+        if [ ! -z "$curerr" ]; then
+            echo "$curerr"
+        fi
+        curerr="$i"
+    elif [ ! -z "$curerr" ]; then
+        curerr+="%0A$i"
+    else # not part of a recognized error
+        echo "$i"
     fi
-    echo -n "$i%0A"
 done
-echo
+if [ ! -z "$curerr" ]; then
+    echo "$curerr"
+fi
