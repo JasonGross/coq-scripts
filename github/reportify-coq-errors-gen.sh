@@ -24,6 +24,8 @@ do
             process "$curerr"
         fi
         curerr="$i"
+    elif [[ "$i" == "::"* ]]; then # already a message to GH
+        echo "$i"
     elif [ ! -z "$curerr" ]; then
         curerr+="%0A$i"
     else # not part of a recognized error
