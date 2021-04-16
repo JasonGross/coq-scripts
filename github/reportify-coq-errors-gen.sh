@@ -10,7 +10,7 @@ file_line_char_warn_regex='^File "\([^ "]\+\)", line \([0-9]\+\), characters \([
 
 function process() {
     if echo "$1" | grep -q "${file_line_char_warn_regex}"; then
-        echo "$1" | sed "s~${file_line_char_warn_regex}~"'::error file=\1,line=\2,col=\3,severity=\5::~g; s~^\(::[^:]*\)::\(.*\)\[\([^,]\+\),\([^]]\+\)\]\s*$~\1,code=\3%2C\4::\2~g'
+        echo "$1" | sed "s~${file_line_char_warn_regex}~"'::error severity=\5,file=\1,line=\2,col=\3::~g; s~^\(::[^:]*\)::\(.*\)\[\([^,]\+\),\([^]]\+\)\]\s*$~\1,code=\3%2C\4::\2~g; s/^::error severity=[Ee][Rr][Rr][Oo][Rr],/::error /g; s/^::error severity=[Ww][Aa][Rr][Nn][Ii][Nn][Gg],/::warning /g'
     else
         echo "$1" | sed 's/%0A/\n/g'
     fi
