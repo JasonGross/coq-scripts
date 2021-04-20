@@ -36,5 +36,5 @@ esac
 if [ -z "$pat" ]; then
     "$@"
 else
-    "$@" 2> >("$DIR/reportify-coq-errors-gen.sh" "$pat")
+    "$@" 2> >("$DIR/reportify-coq-errors-gen.sh" "$pat" >&2)
 fi
