@@ -24,7 +24,7 @@
 # to run this script is:
 #
 # $ ./etc/coq-scripts/timing/make-pretty-timed-diff-tip.sh
-# $ git commit --amend -em "$(git log -1 --pretty=%B; echo; echo '<details><summary>Timing Diff</summary>'; echo '<p>'; echo; echo '```'; cat ./time-of-build-both.log; echo; echo '```'; echo '</p>')"
+# $ git commit --amend -em "$(git log -1 --pretty=%B; echo; echo '<details><summary>Timing Diff</summary>'; echo '<p>'; echo; echo '```'; cat ./time-of-build-both.log; echo; echo '```'; echo '</p>'; echo '</details>')"
 #
 # This will bring up an editor, where you should edit your commit
 # message above the time profile, leaving at least one blank line
