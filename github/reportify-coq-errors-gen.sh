@@ -7,7 +7,7 @@ warnerr="$1"
 curlines=()
 first_line_regex='\(-\s\+\)\?File "\([^ "]\+\)", line \([0-9]\+\), characters \([0-9]\+-[0-9]\+\):\s*'
 second_line_regex='\(-\s\+\)\?\('"$warnerr"'\):\s*'
-last_line_regex='\[\([^],]\+\),\([^],]\+\)\]\s*$'
+last_line_regex='\[\([^],]\+\),\([^],]\+\)\]\s*$\|^\(-\s\+\)\?Command exited with non-zero status 1$'
 file_line_char_warn_regex="^${first_line_regex}"'\(%0A\s*\)\?'"${second_line_regex}"
 invalid_error_regex=(
     "^${first_line_regex}"
