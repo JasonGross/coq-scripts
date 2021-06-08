@@ -1,7 +1,7 @@
 (** Compatibility file for making Coq act similar to Coq v8.8 *)
 Local Set Warnings "-deprecated".
 
-Require Export Coq.Compat.Coq811.
+Require Export Coq.Compat.Coq814.
 
 Unset Private Polymorphic Universes.
 
@@ -21,3 +21,17 @@ Numeral Notation BinNums.Z BinIntDef.Z.of_num_int BinIntDef.Z.to_num_int : Z_sco
 Numeral Notation BinNums.positive BinPosDef.Pos.of_num_int BinPosDef.Pos.to_num_int : positive_scope.
 Numeral Notation BinNums.N BinNatDef.N.of_num_int BinNatDef.N.to_num_int : N_scope.
 Numeral Notation Int31.int31 Int31.phi_inv_nonneg Int31.phi : int31_scope.
+
+Local Set Warnings "-deprecated".
+Global Set Firstorder Solver auto with *.
+Global Set Instance Generalized Output.
+
+Require Coq.micromega.Lia.
+Module Export Coq.
+  Module Export omega.
+    Module Export Omega.
+      #[deprecated(since="8.12", note="The omega tactic was removed in v8.14.  You're now relying on the lia tactic.")]
+      Ltac omega := Lia.lia.
+    End Omega.
+  End omega.
+End Coq.
