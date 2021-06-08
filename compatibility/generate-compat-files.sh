@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd "$( dirname "${BASH_SOURCE[0]}" )"
+
 function append() {
     SOURCE="$1"
     VERSIONS="$2"
