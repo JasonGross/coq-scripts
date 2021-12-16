@@ -2,6 +2,23 @@
 
 set -e
 
+if [[ ! -v skip_unterminated_message_warning ]]; then
+    # default value
+    skip_unterminated_message_warning="" # empty means "don't skip"
+fi
+
+if [[ ! -v forbid_unterminated_errors ]]; then
+    # default value
+    forbid_unterminated_errors="" # empty means "don't forbid"
+fi
+
+for i in 1; do
+    if [ "$1" == "--forbid-unterminated-errors" ]; then
+        forbid_unterminated_errors=yes
+        shift
+    fi
+done
+
 # e.g., "Warning\|Error"
 warnerr="$1"
 curlines=()
@@ -16,11 +33,6 @@ invalid_error_regex=(
     '^\(-\s\+\)\?make\(\[[0-9]\+\]\):' # we ended up back in make output
     '^\(-\s\+\)\?::' # already a message to GH
 )
-
-if [[ ! -v skip_unterminated_message_warning ]]; then
-    # default value
-    skip_unterminated_message_warning="" # empty means "don't skip"
-fi
 
 function format_message() {
     if echo "$1" | grep -q "${file_line_char_warn_regex}"; then
@@ -81,7 +93,12 @@ do
     fi
 done
 
-if [ "${#curlines[@]}" -gt 0 ]; then # we have an unterminated error, just print the first two lines
-    format_curlines_first_two
-    curlines=()
+if [ "${#curlines[@]}" -gt 0 ]; then # we have an unterminated warning or error
+    if [ -z "${forbid_unterminated_errors}" ] && echo "${curlines[1]}" | grep -q "Error"; then # unterminated errors are allowed, and this is an error
+        format_message "$(join_to_oneline "${curlines[@]}")"
+        curlines=()
+    else # just print the first two lines
+        format_curlines_first_two
+        curlines=()
+    fi
 fi
