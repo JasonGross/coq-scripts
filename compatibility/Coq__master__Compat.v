@@ -17,7 +17,7 @@ Require Coq.Strings.Ascii Coq.Strings.String.
 Export String.StringSyntax Ascii.AsciiSyntax.
 Require Coq.ZArith.BinIntDef Coq.PArith.BinPosDef Coq.NArith.BinNatDef.
 Require Coq.Reals.Rdefinitions.
-Require Coq.Numbers.Cyclic.Int63.Int63.
+Require Coq.Numbers.Cyclic.Int63.Uint63.
 Require Coq.Numbers.Cyclic.Int31.Int31.
 Number Notation BinNums.Z BinIntDef.Z.of_num_int BinIntDef.Z.to_num_int : Z_scope.
 Number Notation BinNums.positive BinPosDef.Pos.of_num_int BinPosDef.Pos.to_num_int : positive_scope.
