@@ -33,7 +33,8 @@ FUNIND_VERSIONS="8_7 8_8 8_9 8_10 8_11 8_12 8_13 8_14 8_15 8_16 trunk master"
 GRAB_88_VERSIONS="8_9 8_10 8_11"
 GRAB_88v811_VERSIONS="8_12"
 GRAB_88v813_VERSIONS="8_13"
-GRAB_88v814_VERSIONS="8_14 8_15 8_16 master"
+GRAB_88v814_VERSIONS="8_14 8_15"
+GRAB_88v816_VERSIONS="8_16 master"
 
 for v in $ALL_VERSIONS; do
     cp -f "Coq__${v}__Compat.v.in" "Coq__${v}__Compat.v"
@@ -41,6 +42,7 @@ done
 append "fragments/Grab88v811.v" "$GRAB_88v811_VERSIONS"
 append "fragments/Grab88v813.v" "$GRAB_88v813_VERSIONS"
 append "fragments/Grab88v814.v" "$GRAB_88v814_VERSIONS"
+append "fragments/Grab88v816.v" "$GRAB_88v816_VERSIONS"
 append "fragments/Grab88.v" "$GRAB_88_VERSIONS"
 append "fragments/FastSetAsSet.v" "$FAST_SET_AS_SET_VERSIONS"
 append "fragments/RelationArguments.v" "$RELATION_ARGUMENTS_VERSIONS"
