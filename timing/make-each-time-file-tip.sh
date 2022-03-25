@@ -74,7 +74,7 @@ trap "git checkout '$BRANCH_MOV'; git submodule update --recursive; exit 1" SIGH
 
 # we must `make clean` so we have a fresh slate, and time _all_ the
 # files
-make clean
+make clean cleanall clean_all -k
 # run the given `make` command, passing `TIMED=1` to get timing and
 # `-k` to continue even if files fail
 $MAKECMD TIMED=1 -k --output-sync 2>&1 | tee "$OLD_FILE"
@@ -86,7 +86,7 @@ $MAKECMD TIMED=1 -k --output-sync 2>&1 | tee "$OLD_FILE"
 trap "exit 1" SIGHUP SIGINT SIGTERM
 # we must `make clean` so we have a fresh slate, and time _all_ the
 # files
-make clean
+make clean cleanall clean_all -k
 # run the given `make` command, passing `TIMED=1` to get timing and
 # `-k` to continue even if files fail
 $MAKECMD TIMED=1 -k --output-sync 2>&1 | tee "$NEW_FILE"
