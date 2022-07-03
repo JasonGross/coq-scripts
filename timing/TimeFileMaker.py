@@ -5,6 +5,7 @@ from __future__ import print_function
 import sys
 import re
 import argparse
+import os
 from io import open
 
 # This script parses the output of `make TIMED=1` into a dictionary
