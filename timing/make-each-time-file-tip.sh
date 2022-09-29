@@ -53,7 +53,7 @@ fi
 
 BRANCH=$(git symbolic-ref -q HEAD || git rev-parse -q --verify HEAD)
 BRANCH_DISP="$(git branch | grep '^*' | sed s'/* //')"
-if [ "$BRANCH_DISP" = "(no branch)" ] || [[ "$BRANCH_DISP" == "(HEAD detached at "* ]]
+if [ "$BRANCH_DISP" = "(no branch)" ] || [[ "$BRANCH_DISP" == "(HEAD detached"* ]]
 then
     BRANCH_DISP="$(git reflog | head -n 1 | grep -o 'moving from .* to .*' | sed s'/moving from .* to \(.*\)/\1/g')"
     BRANCH_MOV="$BRANCH"
