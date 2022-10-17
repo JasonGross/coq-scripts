@@ -37,7 +37,7 @@ then
 fi
 
 n="$(git log ${base}..${branch} --oneline | wc -l)"
-newspecs="$(for i in $(seq $((n-1)) -1 0); do echo "${branch}$(for j in $(seq 1 $i); do echo -n ^; done)"; done)"
+newspecs="$(for i in $(seq $n -1 0); do echo "${branch}$(for j in $(seq 1 $i); do echo -n ^; done)"; done)"
 oldfile=""
 buildfailures=()
 
