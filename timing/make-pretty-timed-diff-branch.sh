@@ -89,7 +89,7 @@ for spec in $newspecs; do
                   echo '</details>'
                 } | git commit --amend -F -
                 # copy over the timing log to the new sha
-                precurfile="$curfile"
+                prevcurfile="$curfile"
                 cursha="$(git log -1 --format=%h)"
                 curfile="time-of-build-${cursha}.log"
                 cp "$prevcurfile" "$curfile"
