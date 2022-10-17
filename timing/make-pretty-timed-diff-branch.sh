@@ -36,6 +36,9 @@ then
     exit 1
 fi
 
+git checkout "$branch" || exit 1
+git submodule update --init --recursive || exit 1
+
 n="$(git log ${base}..${branch} --oneline | wc -l)"
 newspecs="$(for i in $(seq $n -1 0); do echo "${branch}$(for j in $(seq 1 $i); do echo -n ^; done)"; done)"
 oldfile=""
@@ -43,9 +46,6 @@ buildfailures=()
 
 # get the names of the files we use
 source "$DIR"/make-pretty-timed-defaults.sh "$@"
-
-git checkout "$branch" || exit 1
-git submodule update --init --recursive || exit 1
 
 # if we're interrupted, first run `git checkout $HEAD` to clean up
 trap "git checkout '${branch}'; git submodule update --recursive; exit 1" SIGHUP SIGINT SIGTERM
