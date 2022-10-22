@@ -54,7 +54,20 @@ $MAKECMD -k --output-sync
 # if we're interrupted, first run `git checkout $HEAD` to clean up
 trap "git checkout '${branch}'; git submodule update --recursive; exit 1" SIGHUP SIGINT SIGTERM
 
+# we want the same set of files to be built on every commit, so we
+# pre-emptively run through all the commits to checkout all the files
+# before each build
+function dirty_files() {
+    local spec
+    for spec in $newspecs; do
+        git checkout "$spec" || exit 1
+        git submodule update --init --recursive || exit 1
+    done
+}
+
+
 for spec in $newspecs; do
+    dirty_files
     git checkout "$spec" || exit 1
     git submodule update --init --recursive || exit 1
     cursha="$(git log -1 --format=%h)"
