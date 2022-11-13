@@ -65,8 +65,12 @@ echo 'If this is wrong, break immediately with ^C'
 
 # make the new version so we only get diffs
 trap "exit 1" SIGHUP SIGINT SIGTERM
-$MAKECMD -k --output-sync
 
+if [ -z "${SKIP_INITIAL_MAKE}" ]; then
+    $MAKECMD -k --output-sync
+else
+    printf "Skipping initial make because SKIP_INITIAL_MAKE=%q" "${SKIP_INITIAL_MAKE}"
+fi
 # make the old version
 
 # if we're interrupted, first run `git checkout $HEAD` to clean up
