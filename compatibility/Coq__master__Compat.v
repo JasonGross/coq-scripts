@@ -3,7 +3,7 @@
 (** Compatibility file for making Coq act similar to Coq v8.8 *)
 Local Set Warnings "-deprecated".
 
-Require Export Coq.Compat.Coq814.
+Require Export Coq.Compat.Coq816.
 
 Unset Private Polymorphic Universes.
 
@@ -27,6 +27,7 @@ Number Notation Int31.int31 Int31.phi_inv_nonneg Int31.phi : int31_scope.
 Local Set Warnings "-deprecated".
 Global Set Firstorder Solver auto with *.
 Global Set Instance Generalized Output.
+Global Set Apply With Renaming.
 
 Require Coq.micromega.Lia.
 Module Export Coq.
