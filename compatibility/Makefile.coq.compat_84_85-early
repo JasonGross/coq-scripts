@@ -42,6 +42,9 @@ endif
 COQ_VERSION_PREFIX = The Coq Proof Assistant, version
 COQ_VERSION := $(firstword $(subst $(COQ_VERSION_PREFIX),,$(shell $(COQBIN)coqc --version 2>/dev/null)))
 COQ_VERSION_MAJOR_MINOR:=$(strip $(shell echo '$(COQ_VERSION)' | grep -o '^[0-9]\+\.[0-9]\+'))
+COQ_VERSION_MAJOR:=$(firstword $(subst ., ,$(COQ_VERSION_MAJOR_MINOR)))
+COQ_VERSION_MINOR:=$(lastword $(subst ., ,$(COQ_VERSION_MAJOR_MINOR)))
+
 
 SHOULD_SILENCE := $(filter 8.5% 8.4%,$(COQ_VERSION))
 
@@ -92,26 +95,64 @@ endif
 $(COMPATIBILITY_FILE): $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_4__Compat.v $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__8_5__Compat.v | warn-compat-file
 	$(Q) $(MAKE) --no-print-directory compatibility
 
+# https://stackoverflow.com/a/51204665/377022
+define PURGE
+$(if $(2),$(call PURGE,$(subst $(firstword $(2)),,$(1)),$(filter-out $(firstword $(2)),$(2))),$(1))
+endef
+
+DIGITS := 0 1 2 3 4 5 6 7 8 9
+IS_NOT_A_NUMBER=$(call PURGE,$(1),$(DIGITS))
+
+sub=$(shell expr $(1) - $(2) 2>/dev/null)
+
+define emit_target
+# $(1) - minor (5 for 8.5, etc)
+# $(2) - file pattern, like Coq__8_%_Compat.v
+
+ifeq ($(subst %,$(1),$(2)),$(subst %,$(call sub,$(1),1),$(2)))
+$$(error Cannot automatically create '$(subst %,$(1),$(2))' because '$(1)' has no '%')
+else
+ifeq (,$(wildcard $(subst %,$(1),$(2))))
+$(subst %,$(1),$(2)): $(subst %,$(call sub,$(1),1),$(2))
+	ln -s $$(abspath $$<) $$@
+endif
+endif
+
+$(call emit_target_if_not_exists,$(call sub,$(1),1),$(2))
+endef
+
+define emit_target_if_not_exists
+$(if $(wildcard $(subst %,$(1),$(2)))
+,
+,$(if $(call IS_NOT_A_NUMBER,$(1))
+,$(error Cannot automatically create '$(subst %,$(1),$(2))' because '$(1)' is not a number ($(call IS_NOT_A_NUMBER,$(1))))
+,$(call emit_target,$(1),$(2))
+))
+endef
+
 define make_compat_version
 # $(1) - version name, like v8.5beta1
-# $(2) - version file name, like 8_5beta1
+# $(2) - version file name pattern, like 8_%
 # $(3) - version target name, like vtrunk
+# $(4) - minor, like 5 or 5beta1
 
-COMPAT_IS_NAME := COMPAT_IS_$(2)
+COMPAT_IS_NAME := COMPAT_IS_$(subst %,$(4),$(2))
 
-$$(COMPAT_IS_NAME) := $(shell cmp -s $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__$(2)__Compat.v $(COMPATIBILITY_FILE); echo $$?)
+$(call emit_target_if_not_exists,$(4),$(Makefile_coq_compat_84_85_mkfile_dir)/Coq__$(2)__Compat.v)
+
+$$(COMPAT_IS_NAME) := $(shell cmp -s $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__$(subst %,$(4),$(2))__Compat.v $(COMPATIBILITY_FILE); echo $$?)
 
 .PHONY: $(3)
 ifeq ($$($$(COMPAT_IS_NAME)),0)
 $(3)::
 	@ true
 else
-$(3)::
+$(3):: $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__$(subst %,$(4),$(2))__Compat.v
 	@ echo "## "
 	@ echo "## Switching to compatibility for Coq $(1)"
 	@ echo "## "
 	rm -f $(COMPATIBILITY_FILE)
-	cp $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__$(2)__Compat.v $(COMPATIBILITY_FILE)
+	cp $(Makefile_coq_compat_84_85_mkfile_dir)/Coq__$(subst %,$(4),$(2))__Compat.v $(COMPATIBILITY_FILE)
 endif
 
 VERSION_TARGETS += $(3)
@@ -119,15 +160,15 @@ FAST_TARGETS += $(3)
 SUPER_FAST_TARGETS += $(3)
 endef
 
-$(eval $(call make_compat_version,v8.5,8_5,v8.5))
-$(eval $(call make_compat_version,v8.5beta1,8_5beta1,v8.5beta1))
-$(eval $(call make_compat_version,v8.5beta2,8_5beta2,v8.5beta2))
-$(eval $(call make_compat_version,v8.5beta3,8_5beta3,v8.5beta3))
-$(eval $(call make_compat_version,v8.5rc1,8_5rc1,v8.5rc1))
-$(eval $(call make_compat_version,v8.5pl1,8_5pl1,v8.5pl1))
-$(eval $(call make_compat_version,v8.5pl2,8_5pl2,v8.5pl2))
-$(eval $(call make_compat_version,trunk,trunk,vtrunk))
-$(eval $(call make_compat_version,master,master,vmaster))
+$(eval $(call make_compat_version,v8.5,8_5,v8.5,5))
+$(eval $(call make_compat_version,v8.5beta1,8_5beta1,v8.5beta1,5beta1))
+$(eval $(call make_compat_version,v8.5beta2,8_5beta2,v8.5beta2,5beta2))
+$(eval $(call make_compat_version,v8.5beta3,8_5beta3,v8.5beta3,5beta3))
+$(eval $(call make_compat_version,v8.5rc1,8_5rc1,v8.5rc1,5rc1))
+$(eval $(call make_compat_version,v8.5pl1,8_5pl1,v8.5pl1,5pl1))
+$(eval $(call make_compat_version,v8.5pl2,8_5pl2,v8.5pl2,5pl2))
+$(eval $(call make_compat_version,trunk,trunk,vtrunk,trunk))
+$(eval $(call make_compat_version,master,master,vmaster,trunk))
 
 EXTRA_ECHO :=
 UPDATE_COQPROJECT?=
@@ -248,7 +289,7 @@ ifneq (,$(filter 8.5%,$(COQ_VERSION))) # 8.5?
 compatibility: v8.5pl2
 else
 ifneq (,$(COQ_VERSION_MAJOR_MINOR))
-$(eval $(call make_compat_version,v$(COQ_VERSION_MAJOR_MINOR),$(subst .,_,$(COQ_VERSION_MAJOR_MINOR)),v$(COQ_VERSION_MAJOR_MINOR)))
+$(eval $(call make_compat_version,v$(COQ_VERSION_MAJOR_MINOR),$(COQ_VERSION_MAJOR)_%,v$(COQ_VERSION_MAJOR_MINOR),$(COQ_VERSION_MINOR)))
 compatibility: v$(COQ_VERSION_MAJOR_MINOR)
 else
 compatibility:
