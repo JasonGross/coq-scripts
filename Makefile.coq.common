@@ -174,12 +174,12 @@ endif
 
 NONEXISTANT_COQPROJECT_VFILES = $(filter-out $(_COQPROJECT_EXCLUDED_VFILES) $(wildcard $(VFILES)),$(VFILES))
 ifneq (,$(NONEXISTANT_COQPROJECT_VFILES))
-FORCE::
+FORCE:: | $(NONEXISTANT_COQPROJECT_VFILES)
 	@ echo
 	@ echo 'error: $(NONEXISTANT_COQPROJECT_VFILES) is in $(_COQPROJECT_NAME) but does not exist.'
 	@ echo 'error: Please run `$(MAKE) $(UPDATE_COQPROJECT_TARGET)`.'
 	@ echo
-	@ false
+	#@ false
 endif
 endif
 
