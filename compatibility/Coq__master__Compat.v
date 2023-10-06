@@ -21,7 +21,6 @@ Require Coq.Numbers.Cyclic.Int63.Uint63.
 Number Notation BinNums.Z BinIntDef.Z.of_num_int BinIntDef.Z.to_num_int : Z_scope.
 Number Notation BinNums.positive BinPosDef.Pos.of_num_int BinPosDef.Pos.to_num_int : positive_scope.
 Number Notation BinNums.N BinNatDef.N.of_num_int BinNatDef.N.to_num_int : N_scope.
-Number Notation Int31.int31 Int31.phi_inv_nonneg Int31.phi : int31_scope.
 
 Local Set Warnings "-deprecated".
 Global Set Firstorder Solver auto with *.
