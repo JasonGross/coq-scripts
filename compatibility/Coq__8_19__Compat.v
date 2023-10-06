@@ -37,7 +37,7 @@ Module Export Coq.
   End omega.
   Module Export Numbers.
     Module Export Cyclic.
-      Module Export Int31.
+      Module Int31.
 (************************************************************************)
 (*         *   The Coq Proof Assistant / The Coq Development Team       *)
 (*  v      *         Copyright INRIA, CNRS and contributors             *)
