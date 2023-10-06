@@ -592,7 +592,7 @@ Definition tail031 (i:int31) :=
 Number Notation int31 phi_inv_nonneg phi : int31_scope.
       End Int31.
     End Cyclic.
-  End Numbers
+  End Numbers.
 End Coq.
 
 (** [set (x := y)] is about 50x slower than it needs to be in Coq 8.4,
