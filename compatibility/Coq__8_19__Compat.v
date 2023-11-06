@@ -3,7 +3,8 @@
 (** Compatibility file for making Coq act similar to Coq v8.8 *)
 Local Set Warnings "-deprecated".
 
-Require Export Coq.Compat.Coq816.
+(* Future-proof by not requiring the compat file *)
+(*Require Export Coq.Compat.Coq816.*)
 
 Unset Private Polymorphic Universes.
 
