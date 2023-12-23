@@ -24,7 +24,7 @@ warnerr="$1"
 curlines=()
 first_line_regex='\(-\s\+\)\?File "\([^ "]\+\)", line \([0-9]\+\), characters \([0-9]\+-[0-9]\+\):\s*'
 second_line_regex='\(-\s\+\)\?\('"$warnerr"'\):\s*'
-last_line_regex='\[\([^],]\+\),\([^],]\+\)\]\s*$\|^\(-\s\+\)\?Command exited with non-zero status 1$'
+last_line_regex='\[\([^],]\+\),\([^]]\+\)\]\s*$\|^\(-\s\+\)\?Command exited with non-zero status 1$'
 file_line_char_warn_regex="^${first_line_regex}"'\(%0A\s*\)\?'"${second_line_regex}"
 invalid_error_regex=(
     "^${first_line_regex}"
@@ -36,7 +36,7 @@ invalid_error_regex=(
 
 function format_message() {
     if echo "$1" | grep -q "${file_line_char_warn_regex}"; then
-        echo "$1" | sed "s~${file_line_char_warn_regex}~"'::error severity=\7,file=\2,line=\3,col=\4::~g; s~^\(::[^:]*\)::\(.*\)\[\([^,]\+\),\([^]]\+\)\]\s*$~\1,code=\3%2C\4::\2~g; s/^::error severity=[Ee][Rr][Rr][Oo][Rr],/::error /g; s/^::error severity=[Ww][Aa][Rr][Nn][Ii][Nn][Gg],/::warning /g'
+        echo "$1" | sed "s~${file_line_char_warn_regex}~"'::error severity=\7,file=\2,line=\3,col=\4::~g; s~^\(::[^:]*\)::\(.*\)\[\([^,]\+\),\([^]]\+\)\]\s*$~\1,code=\3%2C\4::\2~g; s/^::error severity=[Ee][Rr][Rr][Oo][Rr],/::error /g; s/^::error severity=[Ww][Aa][Rr][Nn][Ii][Nn][Gg],/::warning /g' | sed -E ':a; s/(code=[^,:]*),/\1%2C/; ta'
     else
         echo "$1" | sed 's/%0A/\n/g'
     fi
