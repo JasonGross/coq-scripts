@@ -9,4 +9,5 @@ NEXT_MINOR="$((${MINOR} + 1))"
 sed "s/${MAJOR}_${MINOR}/${MAJOR}_${MINOR} ${MAJOR}_${NEXT_MINOR}/g" -i generate-compat-files.sh
 cp "Coq__${MAJOR}_${MINOR}__Compat.v.in" "Coq__${MAJOR}_${NEXT_MINOR}__Compat.v.in"
 ./generate-compat-files.sh
+printf '!%s\n' "compatibility/Coq__${MAJOR}_${NEXT_MINOR}__Compat.v" >> ../.gitignore
 git add "Coq__${MAJOR}_${NEXT_MINOR}__Compat.v.in" "Coq__${MAJOR}_${NEXT_MINOR}__Compat.v"
