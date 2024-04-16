@@ -2,12 +2,12 @@
 
 set -e
 
-if [[ ! -v skip_unterminated_message_warning ]]; then
+if [[ -z "${skip_unterminated_message_warning+x}" ]]; then
     # default value
     skip_unterminated_message_warning="" # empty means "don't skip"
 fi
 
-if [[ ! -v forbid_unterminated_errors ]]; then
+if [[ -z "${forbid_unterminated_errors+x}" ]]; then
     # default value
     forbid_unterminated_errors="" # empty means "don't forbid"
 fi
