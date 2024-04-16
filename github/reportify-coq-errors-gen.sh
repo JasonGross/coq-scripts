@@ -19,6 +19,26 @@ for i in 1; do
     fi
 done
 
+if [[ -z "${SED+x}" ]]; then
+    # default value
+    SED="sed"
+fi
+
+if [[ -z "${SED_E+x}" ]]; then
+    # default value
+    SED_E="${SED} -E"
+fi
+
+if [[ -z "${GREP+x}" ]]; then
+    # default value
+    GREP="grep"
+fi
+
+if [[ -z "${GREP_Q+x}" ]]; then
+    # default value
+    GREP_Q="${GREP} -q"
+fi
+
 # e.g., "Warning\|Error"
 warnerr="$1"
 curlines=()
@@ -35,36 +55,36 @@ invalid_error_regex=(
 )
 
 function format_message() {
-    if echo "$1" | grep -q "${file_line_char_warn_regex}"; then
-        echo "$1" | sed "s~${file_line_char_warn_regex}~"'::error severity=\7,file=\2,line=\3,col=\4::~g; s~^\(::[^:]*\)::\(.*\)\[\([^,]\+\),\([^]]\+\)\]\s*$~\1,code=\3%2C\4::\2~g; s/^::error severity=[Ee][Rr][Rr][Oo][Rr],/::error /g; s/^::error severity=[Ww][Aa][Rr][Nn][Ii][Nn][Gg],/::warning /g' | sed -E ':a; s/(code=[^,:]*),/\1%2C/; ta'
+    if printf '%s\n' "$1" | ${GREP_Q} "${file_line_char_warn_regex}"; then
+        printf '%s\n' "$1" | ${SED} "s~${file_line_char_warn_regex}~"'::error severity=\7,file=\2,line=\3,col=\4::~g; s~^\(::[^:]*\)::\(.*\)\[\([^,]\+\),\([^]]\+\)\]\s*$~\1,code=\3%2C\4::\2~g; s/^::error severity=[Ee][Rr][Rr][Oo][Rr],/::error /g; s/^::error severity=[Ww][Aa][Rr][Nn][Ii][Nn][Gg],/::warning /g' | ${SED_E} ':a; s/(code=[^,:]*),/\1%2C/; ta'
     else
-        echo "$1" | sed 's/%0A/\n/g'
+        printf '%s\n' "$1" | ${SED} 's/%0A/\n/g'
     fi
 }
 
 function join_to_oneline() {
     sep=""
     for i in "$@"; do
-        echo -n "${sep}${i}"
+        printf '%s' "${sep}${i}"
         sep="%0A"
     done
 }
 
 function format_curlines_first_two() {
     if [ -z "${skip_unterminated_message_warning}" ]; then # first we report on the fact that we have an unterminated warning:
-        echo -n "::warning::Could not find a terminator for warning:%0A"
+        printf '%s' "::warning::Could not find a terminator for warning:%0A"
         join_to_oneline "${curlines[@]}"
-        echo
+        printf '\n'
     fi
     format_message "$(join_to_oneline "${curlines[@]:0:2}")" # slice of length 2 starting at 0
     for i in "${curlines[@]:2}"; do # slice to the end starting from 2
-        echo "$i"
+        printf '%s\n' "$i"
     done
 }
 
 function invalid_line() {
     for i in "${invalid_error_regex[@]}"; do
-        if echo "$1" | grep -q "$i"; then
+        if printf '%s\n' "$1" | ${GREP_Q} "$i"; then
             return 0 # we found an invalid line, so we succeed
         fi
     done
@@ -74,7 +94,7 @@ function invalid_line() {
 while read line
 do
     if [ "${#curlines[@]}" -gt 0 ]; then # we're in the middle of an error
-        if echo "$line" | grep -q "${last_line_regex}"; then # we found the end
+        if printf '%s\n' "$line" | ${GREP_Q} "${last_line_regex}"; then # we found the end
             curlines+=("$line")
             format_message "$(join_to_oneline "${curlines[@]}")"
             curlines=()
@@ -86,15 +106,15 @@ do
     fi
     if [ "${#curlines[@]}" -gt 0 ]; then # we're still in the middle of an error, so just accumulate
         curlines+=("$line")
-    elif echo "$line" | grep -q "^${first_line_regex}"; then # we weren't in an error, and we've now found the first line of an error
+    elif printf '%s\n' "$line" | ${GREP_Q} "^${first_line_regex}"; then # we weren't in an error, and we've now found the first line of an error
         curlines+=("$line")
     else # no error here, just pipe through
-        echo "$line"
+        printf '%s\n' "$line"
     fi
 done
 
 if [ "${#curlines[@]}" -gt 0 ]; then # we have an unterminated warning or error
-    if [ -z "${forbid_unterminated_errors}" ] && echo "${curlines[1]}" | grep -q "Error"; then # unterminated errors are allowed, and this is an error
+    if [ -z "${forbid_unterminated_errors}" ] && printf '%s\n' "${curlines[1]}" | ${GREP_Q} "Error"; then # unterminated errors are allowed, and this is an error
         format_message "$(join_to_oneline "${curlines[@]}")"
         curlines=()
     else # just print the first two lines
