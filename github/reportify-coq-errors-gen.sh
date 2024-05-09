@@ -72,7 +72,7 @@ function join_to_oneline() {
 
 function format_curlines_first_two() {
     if [ -z "${skip_unterminated_message_warning}" ]; then # first we report on the fact that we have an unterminated warning:
-        printf '%s' "::warning::Could not find a terminator for warning:%0A"
+        printf '%s' "::warning::Could not find a terminator for ${#curlines[@]}-line warning:%0A"
         join_to_oneline "${curlines[@]}"
         printf '\n'
     fi
