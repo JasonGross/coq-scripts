@@ -37,3 +37,4 @@ compatibility/Coq__*__Compat.v
 !compatibility/Coq__8_18__Compat.v
 !compatibility/Coq__8_19__Compat.v
 !compatibility/Coq__8_20__Compat.v
+!compatibility/Coq__9_0__Compat.v
