@@ -39,7 +39,7 @@ ifeq ($(_COQPROJECT_NAME),_CoqProject)
 _COQPROJECT_NAME = $(_COQPROJECT_IN_NAME)
 endif
 
-COQ_VERSION_PREFIX = The .* Proof Assistant, version
+COQ_VERSION_PREFIX = The .*, version
 COQ_VERSION := $(firstword $(shell $(COQBIN)coqc --version 2>/dev/null | sed 's/$(COQ_VERSION_PREFIX)//'))
 COQ_VERSION_MAJOR_MINOR:=$(strip $(shell echo '$(COQ_VERSION)' | grep -o '^[0-9]\+\.[0-9]\+'))
 COQ_VERSION_MAJOR:=$(firstword $(subst ., ,$(COQ_VERSION_MAJOR_MINOR)))
