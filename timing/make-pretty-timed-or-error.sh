@@ -40,4 +40,4 @@ cat "$SINGLE_PRETTY_TIME_FILE"
 # echo a final new line, because `cat` doesn't
 echo
 # build again, so that we can error if building fails
-$MAKECMD TIMED=1 --output-sync || exit $?
+$MAKECMD TIMED=1 || exit $?

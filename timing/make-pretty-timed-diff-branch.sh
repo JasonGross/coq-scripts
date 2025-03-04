@@ -60,7 +60,7 @@ for spec in $newspecs; do
         # files
         make clean -k
         find . -name "*.vo" -delete
-        { rm -f "${curfile}.ok"; $MAKECMD -k TIMED=1 --output-sync 2>&1 && touch "${curfile}.ok"; } | tee "${curfile}.tmp"
+        { rm -f "${curfile}.ok"; $MAKECMD -k TIMED=1 2>&1 && touch "${curfile}.ok"; } | tee "${curfile}.tmp"
         rm "${curfile}.ok" && mv "${curfile}.tmp" "$curfile" || true
     fi
     if [ ! -z "${oldfile}" ]; then

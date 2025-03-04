@@ -47,7 +47,7 @@ buildfailures=()
 # get the names of the files we use
 source "$DIR"/make-pretty-timed-defaults.sh "$@"
 
-$MAKECMD -k --output-sync
+$MAKECMD -k
 
 # make the old version
 
@@ -74,7 +74,7 @@ for spec in $newspecs; do
     curfile="time-of-build-${cursha}.log"
     if [ ! -f "$curfile" ] || [ ! -z "${FORCE_REBUILD}" ]; then
         #make clean -k; find . -name "*.vo" -delete
-        { rm -f "${curfile}.ok"; $MAKECMD -k TIMED=1 --output-sync 2>&1 && touch "${curfile}.ok"; } | tee "${curfile}.tmp"
+        { rm -f "${curfile}.ok"; $MAKECMD -k TIMED=1 2>&1 && touch "${curfile}.ok"; } | tee "${curfile}.tmp"
         rm "${curfile}.ok" && mv "${curfile}.tmp" "$curfile" || true
     fi
     if [ ! -z "${oldfile}" ]; then
