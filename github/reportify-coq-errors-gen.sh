@@ -48,7 +48,7 @@ last_line_regex='\[\([^],]\+\),\([^]]\+\)\]\s*$\|^\(-\s\+\)\?Command exited with
 file_line_char_warn_regex="^${first_line_regex}"'\(%0A\s*\)\?'"${second_line_regex}"
 invalid_error_regex=(
     "^${first_line_regex}"
-    '^\(-\s\+\)\?\(COQC\|OCAMLC\|OCAMLOPT\|COQDEP\) ' # new build file, presumably we missed the end of the error
+    '^\(-\s\+\)\?\(COQC\|ROCQ\|OCAMLC\|OCAMLOPT\|COQDEP\) ' # new build file, presumably we missed the end of the error
     '^\(-\s\+\)\?[^\s]\+ (real: [0-9\.]*, user: [0-9\.]*, sys: [0-9\.]*, mem: [0-9]* ko)' # output of make TIMED=1, we probably missed the end of the warning/error
     '^\(-\s\+\)\?make\(\[[0-9]\+\]\):' # we ended up back in make output
     '^\(-\s\+\)\?::' # already a message to GH
